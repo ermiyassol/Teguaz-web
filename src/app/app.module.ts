@@ -14,12 +14,18 @@ import { IconsProviderModule } from './icons-provider-module';
 // import { NzLayoutModule } from 'ng-zorro-antd/layout';
 // import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { ngZorroAntdModule } from './ng-zorro-antd-module';
+import { LoginComponent } from './login/login.component';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { MainComponent } from './main/main.component';
 
 registerLocaleData(en);
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MainComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -29,6 +35,8 @@ registerLocaleData(en);
     BrowserAnimationsModule,
     ngZorroAntdModule,
     IconsProviderModule,
+    NzLayoutModule,
+    NzMenuModule,
     // NzLayoutModule,
     // NzMenuModule
   ],
