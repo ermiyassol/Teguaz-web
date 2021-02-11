@@ -1,0 +1,48 @@
+<nz-alert [nzType]="'info'" [nzMessage]="'Create Admin Form'">
+</nz-alert>
+<br>
+<br>
+<form nz-form [formGroup]="validateForm" [nzGutter]="16" class="login-form" (ngSubmit)="submitForm()" nz-row>
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+    <nz-form-control nzErrorTip="Please input company name!">
+      <nz-input-group nzPrefixIcon="man">
+        <input type="text" nz-input formControlName="companyName" placeholder="Company Name" />
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+    <nz-form-control nzErrorTip="Please input your Username!">
+      <nz-input-group nzPrefixIcon="user">
+        <input type="text" nz-input formControlName="username" placeholder="Username" />
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+    <nz-form-control nzErrorTip="Please input your Password!">
+      <nz-input-group nzPrefixIcon="lock">
+        <input type="password" nz-input formControlName="password" placeholder="Password" />
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <div class="clearfix">
+    <nz-upload
+      nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+      nzListType="picture-card"
+      [(nzFileList)]="fileList"
+      [nzShowButton]="fileList.length < 8"
+      [nzPreview]="handlePreview"
+    >
+      <div>
+        <i nz-icon nzType="plus"></i>
+        <div style="margin-top: 8px">Upload</div>
+      </div>
+    </nz-upload>
+    <nz-modal [nzVisible]="previewVisible" [nzContent]="modalContent" [nzFooter]="null" (nzOnCancel)="previewVisible = false">
+      <ng-template #modalContent>
+        <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
+      </ng-template>
+    </nz-modal>
+  </div>
+  <button nz-col nzSpan="24" [nzSm]="{ span: 24 }" nz-button class="login-form-button login-form-margin" [nzType]="'primary'">Create Account</button>
+  Or <a> Reset Form! </a>
+</form>
