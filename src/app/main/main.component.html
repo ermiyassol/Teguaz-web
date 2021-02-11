@@ -12,10 +12,10 @@
       </a>
     </div>
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
-      <li nz-submenu nzOpen nzTitle="Dashboard" nzIcon="dashboard">
+      <li nz-submenu nzOpen nzTitle="Admin" nzIcon="user">
         <ul>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="/welcome">Welcome</a>
+            <a routerLink="createAdmin" routerLinkActive="ant-menu-item-selected">Create Admin Account</a>
           </li>
           <li nz-menu-item nzMatchRouter>
             <a>Monitor</a>
@@ -37,17 +37,40 @@
   <nz-layout>
     <nz-header>
       <div class="app-header">
-        <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
-            <i class="trigger"
-               nz-icon
-               [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
-            ></i>
-        </span>
+        <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
+          <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
+              <i class="trigger"
+                 nz-icon
+                 [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+              ></i>
+          </span>
+          <li nz-menu-item nzSelected>nav 1</li>
+          <li nz-menu-item>nav 2</li>
+          <li class="right-header">
+            <i nz-icon nzType="setting" nzTheme="outline" nzTooltipTitle="Setting" nzTooltipPlacement="bottom" nz-tooltip></i>
+          </li>
+          <li class="right-header">
+            <a nz-dropdown [nzDropdownMenu]="menu">
+              <i nz-icon nzType="user-switch" nzTheme="outline"></i>
+            </a>
+            <nz-dropdown-menu #menu="nzDropdownMenu">
+              <ul nz-menu nzSelectable>
+                <li nz-menu-item>1st menu item</li>
+                <li nz-menu-item>2nd menu item</li>
+                <li nz-menu-item>3rd menu item</li>
+                <li nz-menu-item nzDanger>
+                  <i nz-icon nzType="logout" nzTheme="outline"></i>
+                  Logout
+                </li>
+              </ul>
+            </nz-dropdown-menu>
+          </li>
+        </ul>
       </div>
     </nz-header>
     <nz-content>
       <div class="inner-content">
-        <!-- <router-outlet></router-outlet> -->
+        <router-outlet></router-outlet>
       </div>
     </nz-content>
   </nz-layout>

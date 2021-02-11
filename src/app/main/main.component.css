@@ -78,3 +78,21 @@ nz-content {
   background: #fff;
   height: 100%;
 }
+
+.right-header {
+  float: right;
+  margin-right: 30px;
+}
+
+.right-header i {
+  font-size: 20px;
+}
+
+.right-header i:hover {
+  font-size: 23px;
+  color: #1890ff;
+}
+
+.header-menu {
+  padding-right: 40px;
+}
