@@ -1,6 +1,9 @@
+import { AdminModel } from './../../models/Admin.model';
+import { AdminAccountService } from './../../services/admin-account.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NzUploadFile } from 'ng-zorro-antd/upload';
+import { NzMessageService } from 'ng-zorro-antd/message';
+
 
 function getBase64(file: File): Promise<string | ArrayBuffer | null> {
   return new Promise((resolve, reject) => {
@@ -27,7 +30,16 @@ export class CreateAdminComponent implements OnInit {
     }
 
     if (this.form.valid) {
-      console.log(this.form.value);
+      const companyName = this.form.value.companyName;
+      const username = this.form.value.username;
+      const password = this.form.value.password;
+      const logoUrl = this.form.value.url;
+      const admin = new AdminModel(companyName, username, password, logoUrl);
+      // console.log(admin);
+      if (this.adminService.addAdmin(admin)) {
+        this.form.reset();
+        this.message.create('success', `Admin Account created successfully for ${companyName}`);
+      }
     }
 
   }
@@ -36,13 +48,13 @@ export class CreateAdminComponent implements OnInit {
     this.form.reset();
   }
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private adminService: AdminAccountService, private message: NzMessageService) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
       companyName: [null, [Validators.required]],
       username: [null, [Validators.required]],
-      password: [null, [Validators.required]],
+      password: [null, [Validators.required, Validators.minLength(6)]],
       url: [null, [Validators.required]],
     });
   }
