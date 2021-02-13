@@ -23,6 +23,7 @@ import { CreateAdminComponent } from './main/create-admin/create-admin.component
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { environment } from '../environments/environment';
+import { ViewAdminAccountComponent } from './main/view-admin-account/view-admin-account.component';
 
 registerLocaleData(en);
 
@@ -31,7 +32,8 @@ registerLocaleData(en);
     AppComponent,
     MainComponent,
     LoginComponent,
-    CreateAdminComponent
+    CreateAdminComponent,
+    ViewAdminAccountComponent
   ],
   imports: [
     BrowserModule,
