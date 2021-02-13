@@ -30,7 +30,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzI18nModule } from 'ng-zorro-antd/i18n';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-// import { NzImageModule } from 'ng-zorro-antd/image';
+import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
@@ -98,7 +98,7 @@ import { NzPipesModule } from 'ng-zorro-antd/pipes';
     NzGridModule,
     NzI18nModule,
     NzIconModule,
-    // NzImageModule,
+    NzImageModule,
     NzInputModule,
     NzInputNumberModule,
     NzLayoutModule,

@@ -20,6 +20,10 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { MainComponent } from './main/main.component';
 import { CreateAdminComponent } from './main/create-admin/create-admin.component';
 
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { environment } from '../environments/environment';
+
 registerLocaleData(en);
 
 @NgModule({
@@ -36,12 +40,12 @@ registerLocaleData(en);
     HttpClientModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireDatabaseModule,
     ngZorroAntdModule,
     IconsProviderModule,
     NzLayoutModule,
     NzMenuModule,
-    // NzLayoutModule,
-    // NzMenuModule
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent]

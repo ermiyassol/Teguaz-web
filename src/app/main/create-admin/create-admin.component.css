@@ -21,3 +21,11 @@ nz-alert {
 nz-form-item {
   padding: 0 10px;
 }
+
+.error-border {
+  border: 2px solid red;
+}
+
+.logo-image {
+  margin-bottom: 20px;
+}

@@ -2,7 +2,7 @@
 </nz-alert>
 <br>
 <br>
-<form nz-form [formGroup]="validateForm" [nzGutter]="16" class="login-form" (ngSubmit)="submitForm()" nz-row>
+<form nz-form [formGroup]="form" [nzGutter]="16" class="login-form" (ngSubmit)="submitForm()" nz-row>
   <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
     <nz-form-control nzErrorTip="Please input company name!">
       <nz-input-group nzPrefixIcon="man">
@@ -24,25 +24,22 @@
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
-  <div class="clearfix">
-    <nz-upload
-      nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-      nzListType="picture-card"
-      [(nzFileList)]="fileList"
-      [nzShowButton]="fileList.length < 8"
-      [nzPreview]="handlePreview"
-    >
-      <div>
-        <i nz-icon nzType="plus"></i>
-        <div style="margin-top: 8px">Upload</div>
-      </div>
-    </nz-upload>
-    <nz-modal [nzVisible]="previewVisible" [nzContent]="modalContent" [nzFooter]="null" (nzOnCancel)="previewVisible = false">
-      <ng-template #modalContent>
-        <img [src]="previewImage" [ngStyle]="{ width: '100%' }" />
-      </ng-template>
-    </nz-modal>
-  </div>
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 24 }">
+    <nz-form-control nzErrorTip="Please input Company logo url!">
+      <nz-input-group nzPrefixIcon="lock">
+        <input type="text" nz-input formControlName="url" placeholder="Company Logo Url" />
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+  <img
+     *ngIf="form.value.url"
+      class="logo-image"
+      nz-image
+      width="200px"
+      height="200px"
+      [nzSrc]="form.value.url"
+      alt="Invalid Image Url"
+    />
   <button nz-col nzSpan="24" [nzSm]="{ span: 24 }" nz-button class="login-form-button login-form-margin" [nzType]="'primary'">Create Account</button>
-  Or <a> Reset Form! </a>
+  Or <a (click)="resetForm()"> Reset Form! </a>
 </form>
