@@ -24,6 +24,9 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 import { ViewAdminAccountComponent } from './main/view-admin-account/view-admin-account.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { DrawerComponent } from './main/view-admin-account/drawer/drawer.component';
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 
 registerLocaleData(en);
 
@@ -33,7 +36,10 @@ registerLocaleData(en);
     MainComponent,
     LoginComponent,
     CreateAdminComponent,
-    ViewAdminAccountComponent
+    ViewAdminAccountComponent,
+    PageNotFoundComponent,
+    DrawerComponent,
+    LoadingSpinnerComponent
   ],
   imports: [
     BrowserModule,
