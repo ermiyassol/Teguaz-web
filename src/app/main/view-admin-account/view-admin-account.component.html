@@ -1,19 +1,22 @@
-<nz-card style="width:300px;" [nzCover]="coverTemplate" [nzActions]="[actionSetting, actionEdit, actionEllipsis]">
-  <nz-card-meta nzTitle="Card title" nzDescription="This is the description" [nzAvatar]="avatarTemplate"></nz-card-meta>
-</nz-card>
+<div nz-row [nzGutter]="24" *ngIf="!isLoading">
+  <div nz-col *ngFor="let admin of admins; let i = index">
+    <div class="hover01 column">
+      <div>
+        <figure>
+          <!-- <img src="" /> -->
+          <h3>{{ admin.companyName.toUpperCase() }}</h3>
+          <img
+            width="300px"
+            height="300px"
+            [src]="admin.logoUrl"
+            alt="company logo.png"
+            (click)="openDrawer(i)"
+          />
+        </figure>
+        <span>Hover</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-<ng-template #avatarTemplate>
-  <i nz-icon nzType="crown" nzTheme="outline"></i>
-</ng-template>
-<ng-template #coverTemplate>
-  <img alt="example" src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png" />
-</ng-template>
-<ng-template #actionSetting>
-  <i nz-icon nzType="setting"></i>
-</ng-template>
-<ng-template #actionEdit>
-  <i nz-icon nzType="edit"></i>
-</ng-template>
-<ng-template #actionEllipsis>
-  <i nz-icon nzType="ellipsis"></i>
-</ng-template>
+<app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
