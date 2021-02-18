@@ -1,8 +1,9 @@
 import { AdminModel } from './../models/Admin.model';
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { Subject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { Subject, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
 export interface authResponse {
@@ -29,6 +30,10 @@ export class AdminAccountService {
     return this.Admins[id];
   }
 
+  retriveAdmins() {
+    return this.Admins;
+  }
+
   checkAdmin() {
     return this.Admins.length;
   }
@@ -46,11 +51,11 @@ export class AdminAccountService {
           this.db
             .list('users')
             .remove(childKey)
-            .then((res) => {
+            .then(() => {
               this.db
                 .list('company')
                 .remove(key)
-                .then((res) => {
+                .then(() => {
                   this.Admins.splice(index, 1);
                   this.adminList.next(this.Admins);
                 });
@@ -60,33 +65,39 @@ export class AdminAccountService {
   }
 
   addAdmin(adminDesc: AdminModel) {
-    this.db
-      .list('company')
-      .push({ companyName: adminDesc.companyName, logoUrl: adminDesc.logoUrl })
-      .then((response) => {
-        const cid = response.key;
-        console.log(cid);
-        return this.http
-          .post<authResponse>(
-            'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
-              environment.firebaseConfig.apiKey,
-            {
-              email: adminDesc.username + '@gmail.com',
-              password: adminDesc.password,
-              returnSecureToken: true,
-            }
-          )
-          .subscribe((res) => {
-            console.log(res);
-            this.db
-              .list('users')
-              .push({ uid: res.localId, cid: cid, role: 'Admin' })
-              .then();
-            console.log('request successfully send');
-          });
-        // );
-      });
-    return true;
+    return this.http
+      .post<authResponse>(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
+          environment.firebaseConfig.apiKey,
+        {
+          email: adminDesc.email,
+          password: adminDesc.password,
+          returnSecureToken: true,
+        }
+      )
+      .pipe(
+        catchError(this.handleError),
+        tap((res) => {
+          this.db
+            .list('company')
+            .push({
+              companyName: adminDesc.companyName,
+              logoUrl: adminDesc.logoUrl,
+              username: adminDesc.username,
+              website: adminDesc.website,
+              headOffice: adminDesc.headOffice,
+              phoneNumber: adminDesc.phoneNumber,
+              regDate: adminDesc.regDate,
+            })
+            .then((response) => {
+              const cid = response.key;
+              this.db
+                .list('users')
+                .push({ uid: res.localId, cid: cid, role: 'Admin' })
+                .then();
+            });
+        })
+      );
   }
 
   setAdmins() {
@@ -103,5 +114,68 @@ export class AdminAccountService {
       }
       this.adminList.next(this.Admins);
     });
+    this.childChanged();
+    this.childAdded();
+  }
+
+  // this one is used for every company sub property changes trip, name, passengers of trip . . . . . . etc
+  childChanged() {
+    const ref = this.db.database.ref('company');
+    ref.on('child_changed', (snapshot) => {
+      this.Admins.forEach((cur, index) => {
+        if (cur.key === snapshot.key) {
+          this.Admins[index] = snapshot.val();
+          this.Admins[index].key = snapshot.key;
+          // console.log('changed value called');
+        }
+      });
+      this.adminList.next(this.Admins);
+    });
+  }
+
+  childAdded() {
+    const ref = this.db.database.ref('company');
+    ref.on('child_added', (snapshot) => {
+      let temp: AdminModel;
+      temp = snapshot.val();
+      temp.key = snapshot.key!;
+      this.Admins.push(temp);
+      this.adminList.next(this.Admins);
+      // console.log(snapshot.val());
+      // this.Admins.forEach((cur, index) => {
+      //   if (cur.key === snapshot.key) {
+      //     this.Admins[index] = snapshot.val();
+      //     this.Admins[index].key = snapshot.key;
+      //     // console.log('changed value called');
+      //   }
+      // });
+    });
+  }
+
+  updateAdmin(admin: AdminModel, key: string) {
+    return this.db.list('company').update(key, admin);
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'ERROR: በድጋሚ ያስገቡ!!';
+    if (error.error) {
+      switch (error.error.error.message) {
+        case 'EMAIL_EXISTS':
+          errorMessage =
+            'ERROR: the EMAIL has been registered for another account!!';
+          break;
+        case 'EMAIL_NOT_FOUND':
+          errorMessage = 'ERROR: ያስገቡት ኢሜል አልተመዘገበም ጸጋዬን ደውለው ያነጋግሩት!!';
+          break;
+        case 'INVALID_PASSWORD':
+          errorMessage = 'ERROR: ፓስወርድ ተሳስተዋል በድጋሚ ይሞክሩ!!';
+          break;
+        default:
+          errorMessage = error.error.error.message;
+          break;
+      }
+      return throwError(errorMessage);
+    }
+    return throwError(errorMessage);
   }
 }

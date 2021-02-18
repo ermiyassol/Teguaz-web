@@ -12,6 +12,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 export class DrawerComponent implements OnInit {
   visible = false;
   admin: AdminModel;
+  id: number;
   // @Input() name;
 
   // open(): void {
@@ -33,8 +34,8 @@ export class DrawerComponent implements OnInit {
     if (this.adminService.checkAdmin() == 0) {
       this.routes.navigate(['../'], { relativeTo: this.route });
     } else {
-      const id = this.route.snapshot.params['id'];
-      this.admin = this.adminService.getAdmin(id);
+      this.id = this.route.snapshot.params['id'];
+      this.admin = this.adminService.getAdmin(this.id);
       this.visible = true;
     }
   }
@@ -50,6 +51,8 @@ export class DrawerComponent implements OnInit {
   }
 
   onEdit() {
-    console.log('edit icon clicked');
+    this.routes.navigate(['./../../update_Admin_Account/' + this.id], {
+      relativeTo: this.route,
+    });
   }
 }
