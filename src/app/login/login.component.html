@@ -1,1 +1,73 @@
-<p>login works!</p>
+<!-- <button nz-button [nzType]="'primary'" (click)="showModal()">
+  <span>Show Modal</span>
+</button>
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="The first Modal"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+>
+  <ng-container *nzModalContent>
+    <p>Content one</p>
+    <p>Content two</p>
+    <p>Content three</p>
+  </ng-container>
+</nz-modal> -->
+<div class="body"></div>
+<div class="grad"></div>
+<div class="header">
+  <div>TEGUAZ<span> APP </span></div>
+</div>
+<br />
+<div class="login">
+  <form nz-form [formGroup]="form" class="login-form" (ngSubmit)="submitForm()">
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Please input your username!">
+        <nz-input-group nzPrefixIcon="mail">
+          <input
+            type="email"
+            nz-input
+            formControlName="email"
+            placeholder="email"
+            (input)="onInput($event)"
+            [nzAutocomplete]="auto"
+          />
+          <nz-autocomplete #auto>
+            <nz-auto-option *ngFor="let option of options" [nzValue]="option">{{
+              option
+            }}</nz-auto-option>
+          </nz-autocomplete>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Please input your Password!">
+        <nz-input-group nzPrefixIcon="lock">
+          <input
+            type="password"
+            nz-input
+            formControlName="password"
+            placeholder="Password"
+          />
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+    <div nz-row class="login-form-margin">
+      <div nz-col [nzSpan]="12">
+        <label nz-checkbox formControlName="remember">
+          <span class="col-white">Remember me</span>
+        </label>
+      </div>
+      <div nz-col [nzSpan]="12">
+        <a class="login-form-forgot">Forgot password</a>
+      </div>
+    </div>
+    <button
+      nz-button
+      class="login-form-button login-form-margin"
+      [nzType]="'primary'"
+    >
+      Log in
+    </button>
+  </form>
+</div>

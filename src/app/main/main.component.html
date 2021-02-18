@@ -1,24 +1,39 @@
 <nz-layout class="app-layout">
-  <nz-sider class="menu-sidebar"
-            nzCollapsible
-            nzWidth="256px"
-            nzBreakpoint="md"
-            [(nzCollapsed)]="isCollapsed"
-            [nzTrigger]="null">
+  <nz-sider
+    class="menu-sidebar"
+    nzCollapsible
+    nzWidth="256px"
+    nzBreakpoint="md"
+    [(nzCollapsed)]="isCollapsed"
+    [nzTrigger]="null"
+  >
     <div class="sidebar-logo">
       <a href="https://ng.ant.design/" target="_blank">
-        <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
+        <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo" />
         <h1>Ant Design Of Angular</h1>
       </a>
     </div>
-    <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+    <ul
+      nz-menu
+      nzTheme="dark"
+      nzMode="inline"
+      [nzInlineCollapsed]="isCollapsed"
+    >
       <li nz-submenu nzOpen nzTitle="Admin" nzIcon="user">
         <ul>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="create_Admin" routerLinkActive="ant-menu-item-selected">Create Admin Account</a>
+            <a
+              routerLink="create_Admin_Account"
+              routerLinkActive="ant-menu-item-selected"
+              >Create Admin Account</a
+            >
           </li>
           <li nz-menu-item nzMatchRouter>
-            <a routerLink="view_Admin_Account" routerLinkActive="ant-menu-item-selected">View Admins</a>
+            <a
+              routerLink="view_Admin_Account"
+              routerLinkActive="ant-menu-item-selected"
+              >View Admins</a
+            >
           </li>
           <li nz-menu-item nzMatchRouter>
             <a>Workplace</a>
@@ -39,15 +54,23 @@
       <div class="app-header">
         <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
           <span class="header-trigger" (click)="isCollapsed = !isCollapsed">
-              <i class="trigger"
-                 nz-icon
-                 [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
-              ></i>
+            <i
+              class="trigger"
+              nz-icon
+              [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+            ></i>
           </span>
           <li nz-menu-item nzSelected>nav 1</li>
           <li nz-menu-item>nav 2</li>
           <li class="right-header">
-            <i nz-icon nzType="setting" nzTheme="outline" nzTooltipTitle="Setting" nzTooltipPlacement="bottom" nz-tooltip></i>
+            <i
+              nz-icon
+              nzType="setting"
+              nzTheme="outline"
+              nzTooltipTitle="Setting"
+              nzTooltipPlacement="bottom"
+              nz-tooltip
+            ></i>
           </li>
           <li class="right-header">
             <a nz-dropdown [nzDropdownMenu]="menu">

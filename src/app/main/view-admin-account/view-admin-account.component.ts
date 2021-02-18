@@ -26,12 +26,15 @@ export class ViewAdminAccountComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.isLoading = true;
-    this.adminService.setAdmins();
+    this.admins = this.adminService.retriveAdmins();
     this.subscription = this.adminService.adminList.subscribe((response) => {
       this.admins = response;
       this.isLoading = false;
     });
+    if (!this.adminService.checkAdmin()) {
+      this.isLoading = true;
+      this.adminService.setAdmins();
+    }
   }
 
   ngOnDestroy(): void {
