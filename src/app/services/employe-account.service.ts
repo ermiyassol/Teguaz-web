@@ -1,4 +1,5 @@
-import { AdminModel } from './../models/Admin.model';
+import { MemoryService } from './memory.service';
+import { EmployeeModel } from './../models/Employe.model';
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Subject, throwError } from 'rxjs';
@@ -20,30 +21,37 @@ export interface authResponse {
 @Injectable({
   providedIn: 'root',
 })
-export class AdminAccountService {
-  Admins: AdminModel[] = [];
-  adminList = new Subject<AdminModel[]>();
+export class EmployeAccountService {
+  Employees: EmployeeModel[] = [];
+  companyId: string;
+  employeeList = new Subject<EmployeeModel[]>();
 
-  constructor(private http: HttpClient, private db: AngularFireDatabase) {}
-
-  getAdmin(id: number) {
-    return this.Admins[id];
+  constructor(
+    private http: HttpClient,
+    private db: AngularFireDatabase,
+    private memory: MemoryService
+  ) {
+    this.companyId = this.memory.getCompanyId();
   }
 
-  retriveAdmins() {
-    return this.Admins;
+  getEmployee(id: number) {
+    return this.Employees[id];
   }
 
-  checkAdmin() {
-    return this.Admins.length;
+  retriveEmployees() {
+    return this.Employees;
   }
 
-  deleteAdmin(admin: AdminModel) {
-    const key = admin.key!;
-    const index = this.Admins.indexOf(admin);
+  checkEmployee() {
+    return this.Employees.length;
+  }
+
+  deleteEmployee(Employee: EmployeeModel) {
+    const key = Employee.key!;
+    const index = this.Employees.indexOf(Employee);
     return this.db.database
       .ref('users')
-      .orderByChild('cid')
+      .orderByChild('eid')
       .equalTo(key)
       .once('value', (snapshot) => {
         snapshot.forEach((childSnapshot) => {
@@ -53,25 +61,25 @@ export class AdminAccountService {
             .remove(childKey)
             .then(() => {
               this.db
-                .list('company')
+                .list('company/' + this.companyId + '/employee')
                 .remove(key)
                 .then(() => {
-                  this.Admins.splice(index, 1);
-                  this.adminList.next(this.Admins);
+                  this.Employees.splice(index, 1);
+                  this.employeeList.next(this.Employees);
                 });
             });
         });
       });
   }
 
-  addAdmin(adminDesc: AdminModel) {
+  addEmployee(EmployeeDesc: EmployeeModel) {
     return this.http
       .post<authResponse>(
         'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
           environment.firebaseConfig.apiKey,
         {
-          email: adminDesc.email,
-          password: adminDesc.password,
+          email: EmployeeDesc.email,
+          password: EmployeeDesc.password,
           returnSecureToken: true,
         }
       )
@@ -79,40 +87,43 @@ export class AdminAccountService {
         catchError(this.handleError),
         tap((res) => {
           this.db
-            .list('company')
+            .list('company/' + this.companyId + '/employee')
             .push({
-              companyName: adminDesc.companyName,
-              logoUrl: adminDesc.logoUrl,
-              username: adminDesc.username,
-              website: adminDesc.website,
-              headOffice: adminDesc.headOffice,
-              phoneNumber: adminDesc.phoneNumber,
-              regDate: adminDesc.regDate,
+              fullName: EmployeeDesc.fullName,
+              phoneNumber: EmployeeDesc.phoneNumber,
+              role: EmployeeDesc.role,
+              regDate: EmployeeDesc.regDate,
             })
             .then((response) => {
-              const cid = response.key;
+              const eid = response.key;
+              // const cid = this.memory.getCompanyId();
               this.db
                 .list('users')
-                .push({ uid: res.localId, cid: cid, eid: null, role: 'Admin' })
+                .push({
+                  uid: res.localId,
+                  cid: this.companyId,
+                  eid: eid,
+                  role: EmployeeDesc.role,
+                })
                 .then();
             });
         })
       );
   }
 
-  setAdmins() {
-    const ref = this.db.database.ref('company');
+  setEmployees() {
+    const ref = this.db.database.ref('company/' + this.companyId + '/employee');
     ref.once('value', (snapshot) => {
-      this.Admins = [];
+      this.Employees = [];
       for (const key in snapshot.val()) {
         if (snapshot.val().hasOwnProperty(key)) {
-          let temp: AdminModel;
+          let temp: EmployeeModel;
           temp = snapshot.val()[key];
           temp.key = key;
-          this.Admins.push(temp);
+          this.Employees.push(temp);
         }
       }
-      this.adminList.next(this.Admins);
+      this.employeeList.next(this.Employees);
     });
     this.childChanged();
     this.childAdded();
@@ -120,40 +131,41 @@ export class AdminAccountService {
 
   // this one is used for every company sub property changes trip, name, passengers of trip . . . . . . etc
   childChanged() {
-    const ref = this.db.database.ref('company');
+    console.log(this.companyId);
+    const ref = this.db.database.ref('company/' + this.companyId + '/employee');
     ref.on('child_changed', (snapshot) => {
-      this.Admins.forEach((cur, index) => {
+      this.Employees.forEach((cur, index) => {
         if (cur.key === snapshot.key) {
-          this.Admins[index] = snapshot.val();
-          this.Admins[index].key = snapshot.key;
+          this.Employees[index] = snapshot.val();
+          this.Employees[index].key = snapshot.key;
           // console.log('changed value called');
         }
       });
-      this.adminList.next(this.Admins);
+      this.employeeList.next(this.Employees);
     });
+    console.log('child changed called');
+    console.log(this.Employees);
   }
 
   childAdded() {
-    const ref = this.db.database.ref('company');
+    const ref = this.db.database.ref('company/' + this.companyId + '/employee');
     ref.on('child_added', (snapshot) => {
-      let temp: AdminModel;
+      let temp: EmployeeModel;
       temp = snapshot.val();
       temp.key = snapshot.key!;
-      this.Admins.push(temp);
-      this.adminList.next(this.Admins);
-      // console.log(snapshot.val());
-      // this.Admins.forEach((cur, index) => {
-      //   if (cur.key === snapshot.key) {
-      //     this.Admins[index] = snapshot.val();
-      //     this.Admins[index].key = snapshot.key;
-      //     // console.log('changed value called');
-      //   }
-      // });
+      this.Employees.push(temp);
+      console.log('child added called');
+      this.employeeList.next(this.Employees);
     });
   }
 
-  updateAdmin(admin: AdminModel, key: string) {
-    return this.db.list('company').update(key, admin);
+  updateEmployee(Employee: EmployeeModel, key: string) {
+    Employee.key = null!;
+    console.log('key - ' + key);
+    console.log(Employee);
+    return this.db
+      .list('company/' + this.companyId + '/employee')
+      .update(key, Employee);
   }
 
   private handleError(error: HttpErrorResponse) {

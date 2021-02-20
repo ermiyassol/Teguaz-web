@@ -1,15 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Auth } from './../services/auth.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   isVisible = false;
   form!: FormGroup;
   options: string[] = [];
+  subscription: Subscription;
+  isLoading = false;
 
   onInput(e: Event): void {
     const value = (e.target as HTMLInputElement).value;
@@ -29,17 +35,43 @@ export class LoginComponent implements OnInit {
     }
 
     if (this.form.valid) {
-      console.log(this.form.value);
+      this.isLoading = true;
+      const email = this.form.value.email;
+      const password = this.form.value.password;
+      this.auth.login({ email: email, password: password }).subscribe(
+        () => {},
+        (error) => {
+          this.isLoading = false;
+          if (error.includes('email')) {
+            this.form.patchValue({ email: null });
+          } else {
+            this.form.patchValue({ password: null });
+          }
+          this.message.create('error', error);
+        }
+      );
     }
   }
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private auth: Auth,
+    private message: NzMessageService,
+    private routes: Router
+  ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      email: [null, [Validators.required, Validators.email]],
-      password: [null, [Validators.required, Validators.minLength(6)]],
+      email: ['abaybus@gmail.com', [Validators.required, Validators.email]],
+      password: ['abaybus', [Validators.required, Validators.minLength(6)]],
       remember: [true],
+    });
+
+    this.subscription = this.auth.user.subscribe((response) => {
+      this.isLoading = false;
+      if (response) {
+        this.routes.navigate(['main']);
+      }
     });
   }
 
@@ -55,5 +87,9 @@ export class LoginComponent implements OnInit {
   handleCancel(): void {
     console.log('Button cancel clicked!');
     this.isVisible = false;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

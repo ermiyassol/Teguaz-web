@@ -1,18 +1,3 @@
-<!-- <button nz-button [nzType]="'primary'" (click)="showModal()">
-  <span>Show Modal</span>
-</button>
-<nz-modal
-  [(nzVisible)]="isVisible"
-  nzTitle="The first Modal"
-  (nzOnCancel)="handleCancel()"
-  (nzOnOk)="handleOk()"
->
-  <ng-container *nzModalContent>
-    <p>Content one</p>
-    <p>Content two</p>
-    <p>Content three</p>
-  </ng-container>
-</nz-modal> -->
 <div class="body"></div>
 <div class="grad"></div>
 <div class="header">
@@ -20,7 +5,14 @@
 </div>
 <br />
 <div class="login">
-  <form nz-form [formGroup]="form" class="login-form" (ngSubmit)="submitForm()">
+  <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+  <form
+    nz-form
+    [formGroup]="form"
+    class="login-form"
+    (ngSubmit)="submitForm()"
+    *ngIf="!isLoading"
+  >
     <nz-form-item>
       <nz-form-control nzErrorTip="Please input your username!">
         <nz-input-group nzPrefixIcon="mail">

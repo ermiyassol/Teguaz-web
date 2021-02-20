@@ -239,7 +239,15 @@ export class CreateAdminComponent implements OnInit {
           // email: [null, [Validators.required, Validators.email]],
           website: [this.onEditAdmin.website, [Validators.required]],
           headOffice: [this.onEditAdmin.headOffice, [Validators.required]],
-          phoneNumber: [this.onEditAdmin.phoneNumber, [Validators.required]],
+          phoneNumber: [
+            null,
+            [
+              Validators.required,
+              Validators.minLength(10),
+              Validators.maxLength(10),
+              Validators.pattern(/^-?(0|[1-9]\d*)?$/),
+            ],
+          ],
           // url: [null, [Validators.required]],
         });
         this.imagePreviewUrl = this.onEditAdmin.logoUrl;
@@ -252,7 +260,7 @@ export class CreateAdminComponent implements OnInit {
         email: [null, [Validators.required, Validators.email]],
         website: [' - ', [Validators.required]],
         headOffice: [null, [Validators.required]],
-        phoneNumber: [null, [Validators.required]],
+        phoneNumber: [null, [Validators.required, Validators.maxLength(10)]],
         // url: [null, [Validators.required]],
       });
     }

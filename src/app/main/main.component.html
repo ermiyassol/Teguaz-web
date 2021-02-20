@@ -8,11 +8,13 @@
     [nzTrigger]="null"
   >
     <div class="sidebar-logo">
-      <a href="https://ng.ant.design/" target="_blank">
+      <a routerLink="entry">
         <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo" />
-        <h1>Ant Design Of Angular</h1>
+        <h1>Teguaz</h1>
       </a>
     </div>
+    <!-- <nz-sider></nz-sider> -->
+
     <ul
       nz-menu
       nzTheme="dark"
@@ -40,10 +42,15 @@
           </li>
         </ul>
       </li>
-      <li nz-submenu nzOpen nzTitle="Form" nzIcon="form">
+      <li nz-submenu nzOpen nzTitle="Employee" nzIcon="user-switch">
         <ul>
-          <li nz-menu-item nzMatchRouter>
-            <a>Basic Form</a>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            routerLink="employee_CRUD"
+            routerLinkActive="ant-menu-item-selected"
+          >
+            <a>Employee CRUD</a>
           </li>
         </ul>
       </li>
@@ -62,7 +69,7 @@
           </span>
           <li nz-menu-item nzSelected>nav 1</li>
           <li nz-menu-item>nav 2</li>
-          <li class="right-header">
+          <!-- <li class="right-header">
             <i
               nz-icon
               nzType="setting"
@@ -71,17 +78,17 @@
               nzTooltipPlacement="bottom"
               nz-tooltip
             ></i>
-          </li>
+          </li> -->
           <li class="right-header">
             <a nz-dropdown [nzDropdownMenu]="menu">
-              <i nz-icon nzType="user-switch" nzTheme="outline"></i>
+              <i nz-icon nzType="setting" nzTheme="outline"></i>
             </a>
             <nz-dropdown-menu #menu="nzDropdownMenu">
               <ul nz-menu nzSelectable>
-                <li nz-menu-item>1st menu item</li>
+                <li nz-menu-item>Account Sett.</li>
                 <li nz-menu-item>2nd menu item</li>
                 <li nz-menu-item>3rd menu item</li>
-                <li nz-menu-item nzDanger>
+                <li nz-menu-item nzDanger (click)="onLogout()">
                   <i nz-icon nzType="logout" nzTheme="outline"></i>
                   Logout
                 </li>
