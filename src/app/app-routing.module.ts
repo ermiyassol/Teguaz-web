@@ -1,3 +1,4 @@
+import { BusCrudComponent } from './main/bus-crud/bus-crud.component';
 import { EmployeeAccountComponent } from './main/employee-account/employee-account.component';
 import { EntryComponent } from './main/entry/entry.component';
 import { LoginComponent } from './login/login.component';
@@ -8,6 +9,7 @@ import { CreateAdminComponent } from './main/create-admin/create-admin.component
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MainComponent } from './main/main.component';
+import { PlaceCrudComponent } from './main/place-crud/place-crud.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -25,6 +27,8 @@ const routes: Routes = [
       { path: 'update_Admin_Account/:id', component: CreateAdminComponent },
       // employee routing
       { path: 'employee_CRUD', component: EmployeeAccountComponent },
+      { path: 'bus_CRUD', component: BusCrudComponent },
+      { path: 'destination_CRUD', component: PlaceCrudComponent },
     ],
   },
   // { path: '**', component: PageNotFoundComponent },

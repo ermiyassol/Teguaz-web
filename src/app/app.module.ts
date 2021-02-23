@@ -30,6 +30,8 @@ import { DrawerComponent } from './main/view-admin-account/drawer/drawer.compone
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { EntryComponent } from './main/entry/entry.component';
 import { EmployeeAccountComponent } from './main/employee-account/employee-account.component';
+import { BusCrudComponent } from './main/bus-crud/bus-crud.component';
+import { PlaceCrudComponent } from './main/place-crud/place-crud.component';
 
 registerLocaleData(en);
 
@@ -45,6 +47,8 @@ registerLocaleData(en);
     LoadingSpinnerComponent,
     EntryComponent,
     EmployeeAccountComponent,
+    BusCrudComponent,
+    PlaceCrudComponent,
   ],
   imports: [
     BrowserModule,

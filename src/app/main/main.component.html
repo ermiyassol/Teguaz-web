@@ -37,12 +37,12 @@
               >View Admins</a
             >
           </li>
-          <li nz-menu-item nzMatchRouter>
+          <!-- <li nz-menu-item nzMatchRouter>
             <a>Workplace</a>
-          </li>
+          </li> -->
         </ul>
       </li>
-      <li nz-submenu nzOpen nzTitle="Employee" nzIcon="user-switch">
+      <li nz-submenu nzOpen nzTitle="CRUD Operations" nzIcon="swap">
         <ul>
           <li
             nz-menu-item
@@ -50,10 +50,29 @@
             routerLink="employee_CRUD"
             routerLinkActive="ant-menu-item-selected"
           >
-            <a>Employee CRUD</a>
+            <a>Employee</a>
+          </li>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            routerLink="bus_CRUD"
+            routerLinkActive="ant-menu-item-selected"
+          >
+            <a>Bus</a>
+          </li>
+          <li
+            nz-menu-item
+            nzMatchRouter
+            routerLink="destination_CRUD"
+            routerLinkActive="ant-menu-item-selected"
+          >
+            <a>Destination</a>
           </li>
         </ul>
       </li>
+      <!-- <li nz-submenu nzOpen nzTitle="Bus" nzIcon="key">
+        <ul></ul>
+      </li> -->
     </ul>
   </nz-sider>
   <nz-layout>

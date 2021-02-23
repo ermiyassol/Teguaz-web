@@ -67,7 +67,10 @@ export class EmployeeAccountComponent implements OnInit {
     console.log(this.editCache);
   }
 
-  onDelete() {}
+  onDelete(id: number) {
+    console.log('onDelete called');
+    this.employeeService.deleteEmploye(this.listOfEmployees[id]);
+  }
 
   onInput(e: Event): void {
     const value = (e.target as HTMLInputElement).value;

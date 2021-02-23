@@ -12,13 +12,13 @@
   nz-row
 >
   <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
-    <nz-form-control nzErrorTip="Please input Employee Full Name!">
-      <nz-input-group nzPrefixIcon="user">
+    <nz-form-control nzErrorTip="Please input Bus NO.!">
+      <nz-input-group nzPrefixIcon="key">
         <input
           type="text"
           nz-input
-          formControlName="fullName"
-          placeholder="Full Name"
+          formControlName="busNo"
+          placeholder="Bus No."
         />
       </nz-input-group>
     </nz-form-control>
@@ -35,7 +35,7 @@
       </nz-input-group>
     </nz-form-control>
   </nz-form-item> -->
-  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+  <!-- <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
     <nz-form-control nzErrorTip="Please input valid Email Address!">
       <nz-input-group nzPrefixIcon="mail">
         <input
@@ -53,8 +53,8 @@
         </nz-autocomplete>
       </nz-input-group>
     </nz-form-control>
-  </nz-form-item>
-  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+  </nz-form-item> -->
+  <!-- <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
     <nz-form-control
       nzErrorTip="Please input 'STRONG' Password - 6 characters!"
     >
@@ -67,17 +67,31 @@
         />
       </nz-input-group>
     </nz-form-control>
-  </nz-form-item>
+  </nz-form-item> -->
 
-  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 12 }">
-    <nz-form-control nzErrorTip="Please input Employee role!">
-      <nz-input-group nzPrefixIcon="right">
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+    <nz-form-control nzErrorTip="Please input Driver one name!">
+      <nz-input-group nzPrefixIcon="user">
         <input
           type="text"
           nz-input
-          formControlName="role"
-          placeholder="Employee Role"
-          [nzAutocomplete]="empRole"
+          formControlName="driver1"
+          placeholder="1st Driver Name"
+          [nzAutocomplete]="driversList"
+        />
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+    <nz-form-control nzErrorTip="Please input Driver two name!">
+      <nz-input-group nzPrefixIcon="user">
+        <input
+          type="text"
+          nz-input
+          formControlName="driver2"
+          placeholder="2nd Driver Name"
+          [nzAutocomplete]="driversList"
         />
       </nz-input-group>
     </nz-form-control>
@@ -95,7 +109,7 @@
       </nz-select>
     </nz-form-control>
   </nz-form-item> -->
-  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 12 }">
+  <!-- <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 12 }">
     <nz-form-control nzErrorTip="Please input valid Phone number!">
       <nz-input-group nzPrefixIcon="phone">
         <input
@@ -106,7 +120,7 @@
         />
       </nz-input-group>
     </nz-form-control>
-  </nz-form-item>
+  </nz-form-item> -->
 
   <button
     nz-col
@@ -122,26 +136,21 @@
 </form>
 <br />
 <br />
-<nz-table
-  #editRowTable
-  nzBordered
-  [nzData]="listOfEmployees"
-  nzTableLayout="fixed"
->
+<nz-table #editRowTable nzBordered [nzData]="listOfBuses" nzTableLayout="fixed">
   <thead>
     <tr>
-      <th nzWidth="25%">FULL NAME</th>
-      <th nzWidth="30%">ROLE</th>
-      <th nzWidth="25%">PHONE NO.</th>
+      <th nzWidth="20%">BUS NO.</th>
+      <th nzWidth="30%">DRIVER 1</th>
+      <th nzWidth="30%">DRIVER 2</th>
       <th>Action</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let data of listOfEmployees; let id = index">
+    <tr *ngFor="let data of listOfBuses; let id = index">
       <ng-container *ngIf="!editCache[id].edit; else editTemplate">
-        <td>{{ data.fullName }}</td>
-        <td>{{ data.role }}</td>
-        <td>{{ data.phoneNumber }}</td>
+        <td>{{ data.busNo }}</td>
+        <td>{{ data.drivers[0] }}</td>
+        <td>{{ data.drivers[1] }}</td>
         <td>
           <a (click)="startEdit(id)">Edit</a> -
           <a
@@ -156,25 +165,21 @@
       </ng-container>
       <ng-template #editTemplate>
         <td>
+          <input type="text" nz-input [(ngModel)]="editCache[id].data.busNo" />
+        </td>
+        <td>
           <input
             type="text"
             nz-input
-            [(ngModel)]="editCache[id].data.fullName"
+            [(ngModel)]="editCache[id].data.drivers[0]"
+            [nzAutocomplete]="driversList"
           />
         </td>
         <td>
           <input
             type="text"
             nz-input
-            [(ngModel)]="editCache[id].data.role"
-            [nzAutocomplete]="empRole"
-          />
-        </td>
-        <td>
-          <input
-            type="text"
-            nz-input
-            [(ngModel)]="editCache[id].data.phoneNumber"
+            [(ngModel)]="editCache[id].data.drivers[1]"
           />
         </td>
         <td>
@@ -194,8 +199,8 @@
 </nz-table>
 
 <!-- auto complete -->
-<nz-autocomplete #empRole>
-  <nz-auto-option *ngFor="let option of empRoles" [nzValue]="option">{{
+<nz-autocomplete #driversList>
+  <nz-auto-option *ngFor="let option of Drivers" [nzValue]="option">{{
     option
   }}</nz-auto-option>
 </nz-autocomplete>

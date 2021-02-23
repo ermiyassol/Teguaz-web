@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   options: string[] = [];
   subscription: Subscription;
   isLoading = false;
+  passwordVisible = false;
 
   onInput(e: Event): void {
     const value = (e.target as HTMLInputElement).value;
@@ -62,8 +63,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      email: ['abaybus@gmail.com', [Validators.required, Validators.email]],
-      password: ['abaybus', [Validators.required, Validators.minLength(6)]],
+      email: ['ermiyasst@gmail.com', [Validators.required, Validators.email]],
+      password: ['123456', [Validators.required, Validators.minLength(6)]],
       remember: [true],
     });
 

@@ -46,31 +46,31 @@ export class EmployeAccountService {
     return this.Employees.length;
   }
 
-  deleteEmployee(Employee: EmployeeModel) {
-    const key = Employee.key!;
-    const index = this.Employees.indexOf(Employee);
-    return this.db.database
-      .ref('users')
-      .orderByChild('eid')
-      .equalTo(key)
-      .once('value', (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-          const childKey = childSnapshot.key!;
-          this.db
-            .list('users')
-            .remove(childKey)
-            .then(() => {
-              this.db
-                .list('company/' + this.companyId + '/employee')
-                .remove(key)
-                .then(() => {
-                  this.Employees.splice(index, 1);
-                  this.employeeList.next(this.Employees);
-                });
-            });
-        });
-      });
-  }
+  // deleteEmployee(Employee: EmployeeModel) {
+  //   const key = Employee.key!;
+  //   const index = this.Employees.indexOf(Employee);
+  //   return this.db.database
+  //     .ref('users')
+  //     .orderByChild('eid')
+  //     .equalTo(key)
+  //     .once('value', (snapshot) => {
+  //       snapshot.forEach((childSnapshot) => {
+  //         const childKey = childSnapshot.key!;
+  //         this.db
+  //           .list('users')
+  //           .remove(childKey)
+  //           .then(() => {
+  //             this.db
+  //               .list('company/' + this.companyId + '/employee')
+  //               .remove(key)
+  //               .then(() => {
+  //                 this.Employees.splice(index, 1);
+  //                 this.employeeList.next(this.Employees);
+  //               });
+  //           });
+  //       });
+  //     });
+  // }
 
   addEmployee(EmployeeDesc: EmployeeModel) {
     return this.http
@@ -131,8 +131,9 @@ export class EmployeAccountService {
 
   // this one is used for every company sub property changes trip, name, passengers of trip . . . . . . etc
   childChanged() {
-    console.log(this.companyId);
-    const ref = this.db.database.ref('company/' + this.companyId + '/employee');
+    const ref = this.db.database
+      .ref()
+      .child('company/' + this.companyId + '/employee');
     ref.on('child_changed', (snapshot) => {
       this.Employees.forEach((cur, index) => {
         if (cur.key === snapshot.key) {
@@ -148,7 +149,9 @@ export class EmployeAccountService {
   }
 
   childAdded() {
-    const ref = this.db.database.ref('company/' + this.companyId + '/employee');
+    const ref = this.db.database
+      .ref()
+      .child('company/' + this.companyId + '/employee');
     ref.on('child_added', (snapshot) => {
       let temp: EmployeeModel;
       temp = snapshot.val();
@@ -161,11 +164,35 @@ export class EmployeAccountService {
 
   updateEmployee(Employee: EmployeeModel, key: string) {
     Employee.key = null!;
-    console.log('key - ' + key);
-    console.log(Employee);
     return this.db
       .list('company/' + this.companyId + '/employee')
       .update(key, Employee);
+  }
+
+  deleteEmploye(emp: EmployeeModel) {
+    const key = emp.key!;
+    const index = this.Employees.indexOf(emp);
+    return this.db.database
+      .ref('users')
+      .orderByChild('eid')
+      .equalTo(key)
+      .once('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const childKey = childSnapshot.key!;
+          this.db
+            .list('users')
+            .remove(childKey)
+            .then(() => {
+              this.db
+                .list('company/' + this.companyId + '/employee')
+                .remove(key)
+                .then(() => {
+                  this.Employees.splice(index, 1);
+                  this.employeeList.next(this.Employees);
+                });
+            });
+        });
+      });
   }
 
   private handleError(error: HttpErrorResponse) {
