@@ -1,3 +1,4 @@
+import { EmployeeModel } from './../models/Employe.model';
 import { BusModel } from './../models/bus.model';
 import { MemoryService } from './memory.service';
 import { Injectable } from '@angular/core';
@@ -23,10 +24,10 @@ import { environment } from 'src/environments/environment';
 })
 export class BusCrudService {
   Buses: BusModel[] = [];
-  Drivers: string[] = [];
+  Drivers: EmployeeModel[] = [];
   companyId: string;
   busList = new Subject<BusModel[]>();
-  driversList = new Subject<string[]>();
+  driversList = new Subject<EmployeeModel[]>();
 
   constructor(
     private http: HttpClient,
@@ -57,9 +58,9 @@ export class BusCrudService {
         this.Drivers = [];
         for (const key in snapshot.val()) {
           if (snapshot.val().hasOwnProperty(key)) {
-            let temp: string;
-            temp = snapshot.val()[key]['fullName'];
-            // temp.key = key;
+            let temp: EmployeeModel;
+            temp = snapshot.val()[key];
+            temp.key = key;
             this.Drivers.push(temp);
           }
         }
@@ -98,6 +99,7 @@ export class BusCrudService {
     return this.db.list('company/' + this.companyId + '/bus').push({
       busNo: busDesc.busNo,
       drivers: busDesc.drivers,
+      seatNo: busDesc.seatNo,
     });
     // return this.http
     //   .post<authResponse>(

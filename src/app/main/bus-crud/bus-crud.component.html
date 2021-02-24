@@ -11,7 +11,7 @@
   (ngSubmit)="submitForm()"
   nz-row
 >
-  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 6 }">
     <nz-form-control nzErrorTip="Please input Bus NO.!">
       <nz-input-group nzPrefixIcon="key">
         <input
@@ -69,7 +69,7 @@
     </nz-form-control>
   </nz-form-item> -->
 
-  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 7 }">
     <nz-form-control nzErrorTip="Please input Driver one name!">
       <nz-input-group nzPrefixIcon="user">
         <input
@@ -83,7 +83,7 @@
     </nz-form-control>
   </nz-form-item>
 
-  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 7 }">
     <nz-form-control nzErrorTip="Please input Driver two name!">
       <nz-input-group nzPrefixIcon="user">
         <input
@@ -92,6 +92,19 @@
           formControlName="driver2"
           placeholder="2nd Driver Name"
           [nzAutocomplete]="driversList"
+        />
+      </nz-input-group>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 4 }">
+    <nz-form-control nzErrorTip="Please input Bus Number Of Seats!1">
+      <nz-input-group nzPrefixIcon="key">
+        <input
+          type="number"
+          nz-input
+          formControlName="seatNo"
+          placeholder="Seat No."
         />
       </nz-input-group>
     </nz-form-control>
@@ -140,8 +153,9 @@
   <thead>
     <tr>
       <th nzWidth="20%">BUS NO.</th>
-      <th nzWidth="30%">DRIVER 1</th>
-      <th nzWidth="30%">DRIVER 2</th>
+      <th nzWidth="25%">DRIVER 1</th>
+      <th nzWidth="25%">DRIVER 2</th>
+      <th nzWidth="10%">Seat No.</th>
       <th>Action</th>
     </tr>
   </thead>
@@ -151,6 +165,7 @@
         <td>{{ data.busNo }}</td>
         <td>{{ data.drivers[0] }}</td>
         <td>{{ data.drivers[1] }}</td>
+        <td>{{ data.seatNo }}</td>
         <td>
           <a (click)="startEdit(id)">Edit</a> -
           <a
@@ -165,10 +180,20 @@
       </ng-container>
       <ng-template #editTemplate>
         <td>
-          <input type="text" nz-input [(ngModel)]="editCache[id].data.busNo" />
+          <input
+            type="text"
+            [ngClass]="{
+              editError: editError && editCache[id].data.busNo == ''
+            }"
+            nz-input
+            [(ngModel)]="editCache[id].data.busNo"
+          />
         </td>
         <td>
           <input
+            [ngClass]="{
+              editError: editError && editCache[id].data.drivers[0] == ''
+            }"
             type="text"
             nz-input
             [(ngModel)]="editCache[id].data.drivers[0]"
@@ -177,9 +202,26 @@
         </td>
         <td>
           <input
+            [ngClass]="{
+              editError: editError && editCache[id].data.drivers[1] == ''
+            }"
             type="text"
             nz-input
             [(ngModel)]="editCache[id].data.drivers[1]"
+            [nzAutocomplete]="driversList"
+          />
+        </td>
+        <td>
+          <input
+            [ngClass]="{
+              editError:
+                editError &&
+                editCache[id].data.seatNo == null &&
+                editCache[id].data.seatNo == 0
+            }"
+            type="number"
+            nz-input
+            [(ngModel)]="editCache[id].data.seatNo"
           />
         </td>
         <td>
@@ -191,7 +233,7 @@
             (nzOnConfirm)="saveEdit(id)"
             >Save</a
           >
-          <a (click)="cancelEdit(id)">Cancel</a>
+          <a (click)="cancelEdit(id)" disabled="true">Cancel</a>
         </td>
       </ng-template>
     </tr>
@@ -200,7 +242,7 @@
 
 <!-- auto complete -->
 <nz-autocomplete #driversList>
-  <nz-auto-option *ngFor="let option of Drivers" [nzValue]="option">{{
-    option
+  <nz-auto-option *ngFor="let option of Drivers" [nzValue]="option.fullName">{{
+    option.fullName
   }}</nz-auto-option>
 </nz-autocomplete>
