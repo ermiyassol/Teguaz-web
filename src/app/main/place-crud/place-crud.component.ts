@@ -103,7 +103,10 @@ export class PlaceCrudComponent implements OnInit {
     }
 
     if (this.form.valid) {
-      const destination = this.form.value.destination;
+      const destination =
+        this.form.value.destination +
+        ' / ' +
+        this.form.value.amharicDestination;
       const price = this.form.value.price;
       const discount = this.form.value.discount;
       const Place = new PlaceModel(destination, price, discount);
@@ -128,6 +131,7 @@ export class PlaceCrudComponent implements OnInit {
     this.form = this.fb.group({
       destination: [null, [Validators.required]],
       price: [null, [Validators.required]],
+      amharicDestination: [null, [Validators.required]],
       discount: [0, [Validators.required]],
     });
 

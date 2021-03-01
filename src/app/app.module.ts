@@ -32,6 +32,7 @@ import { EntryComponent } from './main/entry/entry.component';
 import { EmployeeAccountComponent } from './main/employee-account/employee-account.component';
 import { BusCrudComponent } from './main/bus-crud/bus-crud.component';
 import { PlaceCrudComponent } from './main/place-crud/place-crud.component';
+import { TripOperationComponent } from './main/trip-operation/trip-operation.component';
 
 registerLocaleData(en);
 
@@ -49,6 +50,7 @@ registerLocaleData(en);
     EmployeeAccountComponent,
     BusCrudComponent,
     PlaceCrudComponent,
+    TripOperationComponent,
   ],
   imports: [
     BrowserModule,
@@ -70,4 +72,4 @@ registerLocaleData(en);
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
