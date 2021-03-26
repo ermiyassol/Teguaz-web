@@ -1,3 +1,4 @@
+import { AuthInterceptor } from './services/auth.interceptor.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
@@ -8,7 +9,7 @@ import { en_US } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IconsProviderModule } from './icons-provider-module';
 // import { NzLayoutModule } from 'ng-zorro-antd/layout';
@@ -27,6 +28,11 @@ import { ViewAdminAccountComponent } from './main/view-admin-account/view-admin-
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { DrawerComponent } from './main/view-admin-account/drawer/drawer.component';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
+import { EntryComponent } from './main/entry/entry.component';
+import { EmployeeAccountComponent } from './main/employee-account/employee-account.component';
+import { BusCrudComponent } from './main/bus-crud/bus-crud.component';
+import { PlaceCrudComponent } from './main/place-crud/place-crud.component';
+import { TripOperationComponent } from './main/trip-operation/trip-operation.component';
 
 registerLocaleData(en);
 
@@ -39,7 +45,12 @@ registerLocaleData(en);
     ViewAdminAccountComponent,
     PageNotFoundComponent,
     DrawerComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    EntryComponent,
+    EmployeeAccountComponent,
+    BusCrudComponent,
+    PlaceCrudComponent,
+    TripOperationComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,7 +66,10 @@ registerLocaleData(en);
     NzLayoutModule,
     NzMenuModule,
   ],
-  providers: [{ provide: NZ_I18N, useValue: en_US }],
-  bootstrap: [AppComponent]
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: NZ_I18N, useValue: en_US },
+  ],
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

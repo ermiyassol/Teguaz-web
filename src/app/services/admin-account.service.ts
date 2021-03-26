@@ -93,7 +93,7 @@ export class AdminAccountService {
               const cid = response.key;
               this.db
                 .list('users')
-                .push({ uid: res.localId, cid: cid, role: 'Admin' })
+                .push({ uid: res.localId, cid: cid, eid: null, role: 'Admin' })
                 .then();
             });
         })
