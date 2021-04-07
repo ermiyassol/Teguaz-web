@@ -7,6 +7,12 @@ import { AngularFireDatabase } from '@angular/fire/database';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+interface check {
+  label: string;
+  value: string;
+  checked?: boolean;
+  disabled: boolean;
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -20,6 +26,7 @@ export class TripService {
   SPList = new Subject<SPModel>();
   RSP: SPModel;
   RSPList = new Subject<SPModel>();
+  driversList = new Subject<string[]>();
 
   constructor(
     private http: HttpClient,
@@ -27,6 +34,115 @@ export class TripService {
     private memory: MemoryService
   ) {
     this.companyId = this.memory.getCompanyId();
+  }
+
+  returnDrivers(busNo: string) {
+    const driver = this.Buses.filter((bus) => bus.busNo == busNo).map(
+      (cur) => cur.drivers
+    );
+    this.driversList.next(driver[0]);
+  }
+
+  save() {
+    console.log(this.SP);
+  }
+
+  // RSPUpdate(
+  //   updatedForm: check[],
+  //   // startingCity: string,
+  //   destinationCity: string
+  // ) {
+  //   this.RSP.places.forEach((place, pindex) => {
+  //     updatedForm.forEach((updatedPlace) => {
+  //       if (place.name == updatedPlace.value) {
+  //         if (place.selectedBy?.length == 0) {
+  //           if (updatedPlace.checked == true) {
+  //             this.RSP.places[pindex].selectedBy?.push({
+  //               cid: this.companyId,
+  //               destination: destinationCity,
+  //             });
+  //           }
+  //         }
+  //         place.selectedBy?.forEach((selected, sindex) => {
+  //           if (
+  //             selected.cid == this.companyId &&
+  //             updatedPlace.checked == true &&
+  //             selected.destination == destinationCity
+  //           ) {
+  //           } else if (
+  //             selected.cid == this.companyId &&
+  //             updatedPlace.checked == false &&
+  //             selected.destination == destinationCity
+  //           ) {
+  //             this.RSP.places[pindex].selectedBy?.splice(sindex, 1);
+  //           } else if (
+  //             place.selectedBy?.length == sindex + 1 &&
+  //             selected.destination != destinationCity
+  //           ) {
+  //             this.RSP.places[pindex].selectedBy?.push({
+  //               cid: this.companyId,
+  //               destination: destinationCity,
+  //             });
+  //           } else {
+  //           }
+  //         });
+  //       }
+  //     });
+  //   });
+
+  //   this.db.list('starting_places').update(this.RSP.key!, this.RSP);
+  // }
+
+  SPUpdate(
+    updatedForm: check[],
+    type: string, // SP / RSP
+    destinationCity: string
+  ) {
+    const temp: SPModel = type == 'SP' ? this.SP : this.RSP;
+
+    temp.places.forEach((place, pindex) => {
+      updatedForm.forEach((updatedPlace) => {
+        if (place.name == updatedPlace.value) {
+          if (place.selectedBy?.length == 0) {
+            if (updatedPlace.checked == true) {
+              temp.places[pindex].selectedBy?.push({
+                cid: this.companyId,
+                destination: destinationCity,
+              });
+            }
+          }
+          const selectedDestinations = place.selectedBy?.map(
+            (cur) => cur.destination
+          );
+          place.selectedBy?.forEach((selected, sindex) => {
+            if (
+              selected.cid == this.companyId &&
+              updatedPlace.checked == true &&
+              selected.destination == destinationCity
+            ) {
+            } else if (
+              selected.cid == this.companyId &&
+              updatedPlace.checked == false &&
+              selected.destination == destinationCity
+            ) {
+              temp.places[pindex].selectedBy?.splice(sindex, 1);
+            } else if (
+              place.selectedBy?.length == sindex + 1 &&
+              updatedPlace.checked == true &&
+              !selectedDestinations?.includes(destinationCity)
+            ) {
+              temp.places[pindex].selectedBy?.push({
+                cid: this.companyId,
+                destination: destinationCity,
+              });
+            } else {
+            }
+          });
+        }
+      });
+    });
+    type == 'SP' ? (this.SP = temp) : (this.RSP = temp);
+    this.db.list('starting_places').update(temp.key!, temp);
   }
 
   setDestination() {
@@ -45,28 +161,31 @@ export class TripService {
 
   setBuses() {
     const ref = this.db.database.ref('company/' + this.companyId + '/bus');
-    ref.once('value', (snapshot) => {
+    ref.on('value', (snapshot) => {
       this.Buses = [];
       for (const key in snapshot.val()) {
         if (snapshot.val().hasOwnProperty(key)) {
           let temp: BusModel;
           temp = snapshot.val()[key];
           temp.key = key;
-          temp.onTrip = temp.onTrip ? temp.onTrip : '';
-          this.Buses.push(temp);
+          temp.onTrip = temp.onTrip ? temp.onTrip : false;
+          if (!temp.onTrip) {
+            this.Buses.push(temp);
+          }
         }
       }
+
       this.busList.next(this.Buses);
     });
   }
 
-  setSP(city: string) {
+  setSP(city: string, type: string) {
     const ref = this.db.database.ref('starting_places');
     ref
       .orderByChild('city')
       .equalTo(city)
       .on('value', (snapshot) => {
-        // this.SP = [];
+        // this.SP = {};
         for (const key in snapshot.val()) {
           if (snapshot.val().hasOwnProperty(key)) {
             let temp: SPModel;
@@ -75,37 +194,39 @@ export class TripService {
             temp.places.forEach((cur, index) => {
               temp.places[index].selectedBy = cur.selectedBy
                 ? cur.selectedBy
-                : [{ cid: '', destination: '' }];
+                : [];
             });
-            this.SP = temp;
+            type == 'SP' ? (this.SP = temp) : (this.RSP = temp);
           }
         }
-        this.SPList.next(this.SP);
+        type == 'SP' ? this.SPList.next(this.SP) : this.RSPList.next(this.RSP);
       });
   }
 
-  setRSP(city: string) {
-    const ref = this.db.database.ref('starting_places');
-    ref
-      .orderByChild('city')
-      .equalTo(city)
-      .on('value', (snapshot) => {
-        for (const key in snapshot.val()) {
-          if (snapshot.val().hasOwnProperty(key)) {
-            let temp: SPModel;
-            temp = snapshot.val()[key];
-            temp.key = key;
-            temp.places.forEach((cur, index) => {
-              temp.places[index].selectedBy = cur.selectedBy
-                ? cur.selectedBy
-                : [{ cid: '', destination: '' }];
-            });
-            this.RSP = temp;
-          }
-        }
-        this.RSPList.next(this.RSP);
-      });
-  }
+  // setRSP(city: string) {
+  //   const ref = this.db.database.ref('starting_places');
+  //   ref
+  //     .orderByChild('city')
+  //     .equalTo(city)
+  //     .on('value', (snapshot) => {
+  //       for (const key in snapshot.val()) {
+  //         if (snapshot.val().hasOwnProperty(key)) {
+  //           let temp: SPModel;
+  //           temp = snapshot.val()[key];
+  //           temp.key = key;
+  //           if (temp.places) {
+  //             temp.places.forEach((cur, index) => {
+  //               temp.places[index].selectedBy = cur.selectedBy
+  //                 ? cur.selectedBy
+  //                 : [];
+  //             });
+  //           }
+  //           this.RSP = temp;
+  //         }
+  //       }
+  //       this.RSPList.next(this.RSP);
+  //     });
+  // }
 
   addSP(cityName: string, start: string) {
     const place = { name: start, selectedBy: [] };
@@ -119,7 +240,11 @@ export class TripService {
           for (const key in snapshot.val()) {
             if (snapshot.val().hasOwnProperty(key)) {
               temp = snapshot.val()[key];
-              temp.places.push(place);
+              if (temp.places) {
+                temp.places.push(place);
+              } else {
+                temp.places = [place];
+              }
             }
             this.db.list('starting_places').update(key, temp);
           }
@@ -130,10 +255,11 @@ export class TripService {
           });
         }
       });
-    // .then((response) => {
-    //   console.log(response);
-    //   const sp = new SPModel(cityName, [place], response.key!);
-    //   this.SP.push(sp);
-    // });
+  }
+
+  addTrip(newTrip: TripModel) {
+    newTrip.passengers = [];
+    newTrip.key = null!;
+    return this.db.list('trip').push(newTrip);
   }
 }

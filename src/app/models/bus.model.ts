@@ -3,7 +3,7 @@ export class BusModel {
     public busNo: string,
     public drivers: string[],
     public seatNo: number,
-    public onTrip?: string,
+    public onTrip?: boolean,
     public key?: string
   ) {}
 }

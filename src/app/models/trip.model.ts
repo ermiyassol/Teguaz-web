@@ -5,7 +5,9 @@ export class TripModel {
     public startingCity: string,
     public destinationCity: string,
     public startingPlace: string[],
+    public driver: string,
     public busNo: string,
+    public companyId: string,
     public key?: string,
     public passengers?: []
   ) {}

@@ -49,7 +49,7 @@ export class BusCrudService {
     return this.Buses.length;
   }
 
-  getDrivers() {
+  setDrivers() {
     this.db.database
       .ref('company/' + this.companyId + '/employee')
       .orderByChild('role')
@@ -100,6 +100,7 @@ export class BusCrudService {
       busNo: busDesc.busNo,
       drivers: busDesc.drivers,
       seatNo: busDesc.seatNo,
+      onTrip: false,
     });
     // return this.http
     //   .post<authResponse>(
