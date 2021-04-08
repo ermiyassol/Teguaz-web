@@ -1,6 +1,6 @@
 import { TripModel } from './../models/trip.model';
 import { SPModel } from './../models/startingPlace.model';
-import { BusModel } from './../models/bus.model';
+import { BusModel, onTrip } from './../models/bus.model';
 import { Subject } from 'rxjs';
 import { MemoryService } from './memory.service';
 import { AngularFireDatabase } from '@angular/fire/database';
@@ -27,6 +27,8 @@ export class TripService {
   RSP: SPModel;
   RSPList = new Subject<SPModel>();
   driversList = new Subject<string[]>();
+  Trips: TripModel[] = [];
+  tripsList = new Subject<TripModel[]>();
 
   constructor(
     private http: HttpClient,
@@ -46,52 +48,6 @@ export class TripService {
   save() {
     console.log(this.SP);
   }
-
-  // RSPUpdate(
-  //   updatedForm: check[],
-  //   // startingCity: string,
-  //   destinationCity: string
-  // ) {
-  //   this.RSP.places.forEach((place, pindex) => {
-  //     updatedForm.forEach((updatedPlace) => {
-  //       if (place.name == updatedPlace.value) {
-  //         if (place.selectedBy?.length == 0) {
-  //           if (updatedPlace.checked == true) {
-  //             this.RSP.places[pindex].selectedBy?.push({
-  //               cid: this.companyId,
-  //               destination: destinationCity,
-  //             });
-  //           }
-  //         }
-  //         place.selectedBy?.forEach((selected, sindex) => {
-  //           if (
-  //             selected.cid == this.companyId &&
-  //             updatedPlace.checked == true &&
-  //             selected.destination == destinationCity
-  //           ) {
-  //           } else if (
-  //             selected.cid == this.companyId &&
-  //             updatedPlace.checked == false &&
-  //             selected.destination == destinationCity
-  //           ) {
-  //             this.RSP.places[pindex].selectedBy?.splice(sindex, 1);
-  //           } else if (
-  //             place.selectedBy?.length == sindex + 1 &&
-  //             selected.destination != destinationCity
-  //           ) {
-  //             this.RSP.places[pindex].selectedBy?.push({
-  //               cid: this.companyId,
-  //               destination: destinationCity,
-  //             });
-  //           } else {
-  //           }
-  //         });
-  //       }
-  //     });
-  //   });
-
-  //   this.db.list('starting_places').update(this.RSP.key!, this.RSP);
-  // }
 
   SPUpdate(
     updatedForm: check[],
@@ -159,7 +115,38 @@ export class TripService {
     });
   }
 
-  setBuses() {
+  onTripValidationforReturnTrip(
+    busNo: string,
+    date: String,
+    type: string
+  ): Boolean {
+    let isValidated = true;
+    const onTrip = this.Buses.filter((bus) => bus.busNo == busNo).map(
+      (bus) => bus.onTrip
+    )[0];
+    const fetchedDate = date.split('/');
+    onTrip.forEach((cur) => {
+      const dateArr = cur.date.split('/');
+
+      const result =
+        fetchedDate[0] == dateArr[0]
+          ? parseInt(dateArr[1]) - parseInt(fetchedDate[1])
+          : 30 - parseInt(dateArr[1]) + parseInt(fetchedDate[1]);
+      // console.log(dateArr[1] + ' - ' + fetchedDate[1] + ' = ' + result);
+      if (result < 2 && result > -2 && type == 'comp') {
+        isValidated = false;
+      }
+      if (
+        (cur.date == date && type == 'equal') ||
+        (result < 0 && type == 'equal')
+      ) {
+        isValidated = false;
+      }
+    });
+    return isValidated;
+  }
+
+  setBuses(date: string) {
     const ref = this.db.database.ref('company/' + this.companyId + '/bus');
     ref.on('value', (snapshot) => {
       this.Buses = [];
@@ -168,10 +155,13 @@ export class TripService {
           let temp: BusModel;
           temp = snapshot.val()[key];
           temp.key = key;
-          temp.onTrip = temp.onTrip ? temp.onTrip : false;
-          if (!temp.onTrip) {
+          temp.onTrip = temp.onTrip ? temp.onTrip : [];
+          // if (!temp.onTrip) { // ! do the date validation here
+          const onTripValidator = temp.onTrip.filter((cur) => cur.date == date);
+          if (onTripValidator.length == 0) {
             this.Buses.push(temp);
           }
+          // }
         }
       }
 
@@ -203,31 +193,6 @@ export class TripService {
       });
   }
 
-  // setRSP(city: string) {
-  //   const ref = this.db.database.ref('starting_places');
-  //   ref
-  //     .orderByChild('city')
-  //     .equalTo(city)
-  //     .on('value', (snapshot) => {
-  //       for (const key in snapshot.val()) {
-  //         if (snapshot.val().hasOwnProperty(key)) {
-  //           let temp: SPModel;
-  //           temp = snapshot.val()[key];
-  //           temp.key = key;
-  //           if (temp.places) {
-  //             temp.places.forEach((cur, index) => {
-  //               temp.places[index].selectedBy = cur.selectedBy
-  //                 ? cur.selectedBy
-  //                 : [];
-  //             });
-  //           }
-  //           this.RSP = temp;
-  //         }
-  //       }
-  //       this.RSPList.next(this.RSP);
-  //     });
-  // }
-
   addSP(cityName: string, start: string) {
     const place = { name: start, selectedBy: [] };
     const ref = this.db.database.ref('starting_places');
@@ -257,9 +222,56 @@ export class TripService {
       });
   }
 
-  addTrip(newTrip: TripModel) {
+  addTrip(newTrip: TripModel, date: string) {
     newTrip.passengers = [];
     newTrip.key = null!;
-    return this.db.list('trip').push(newTrip);
+    return this.db
+      .list('trip')
+      .push(newTrip)
+      .then((response) => {
+        const selectedBus = this.Buses.filter(
+          (bus) => bus.busNo == newTrip.busNo
+        )[0];
+        const onTripValue = new onTrip(
+          response.key!,
+          new Date(date).toLocaleDateString()
+        );
+        selectedBus.onTrip.push(onTripValue);
+        this.db
+          .list('company/' + this.companyId + '/bus')
+          .update(selectedBus.key!, selectedBus);
+      });
+  }
+
+  // this.companyId
+  setTrips() {
+    const ref = this.db.database.ref('trip');
+    ref
+      .orderByChild('companyId')
+      .equalTo(this.companyId)
+      .on('value', (snapshot) => {
+        this.Trips = [];
+        for (const key in snapshot.val()) {
+          if (snapshot.val().hasOwnProperty(key)) {
+            let temp: TripModel;
+            temp = snapshot.val()[key];
+            temp.key = key;
+            temp.passengers = temp.passengers ? temp.passengers : [];
+            this.Trips.push(temp);
+          }
+        }
+        this.Trips.sort((a, b) => {
+          const x = a.date.split(' / ')[1];
+          const y = b.date.split(' / ')[1];
+          if (x < y) {
+            return -1;
+          }
+          if (x > y) {
+            return 1;
+          }
+          return 0;
+        });
+        this.tripsList.next(this.Trips);
+      });
   }
 }

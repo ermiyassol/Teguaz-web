@@ -159,7 +159,7 @@ export class BusCrudComponent implements OnInit {
       const d2 = this.form.value.driver2;
       const drivers = [d1, d2];
       const seatNo = this.form.value.seatNo;
-      const bus = new BusModel(busNo, drivers, seatNo);
+      const bus = new BusModel(busNo, drivers, seatNo, []);
       this.busService.addBus(bus).then(() => {
         this.form.reset();
         this.message.create('success', `New Bus Registered Successfully`);

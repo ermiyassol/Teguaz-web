@@ -87,7 +87,10 @@
 >
   <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 3 }">
     <nz-form-control nzErrorTip="please select Trip Date!">
-      <nz-date-picker formControlName="date"></nz-date-picker>
+      <nz-date-picker
+        formControlName="date"
+        (ngModelChange)="dateChanged()"
+      ></nz-date-picker>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 3 }">

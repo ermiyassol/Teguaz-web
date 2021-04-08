@@ -142,6 +142,7 @@ export class BusCrudService {
           let temp: BusModel;
           temp = snapshot.val()[key];
           temp.key = key;
+          temp.onTrip = temp.onTrip ? temp.onTrip : [];
           this.Buses.push(temp);
         }
       }

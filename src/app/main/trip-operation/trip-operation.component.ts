@@ -193,11 +193,13 @@ export class TripOperationComponent implements OnInit {
   }
 
   submitForm() {
-    // console.log(ethDateTime.converterDateTime.toEthiopian(new Date())); // ! IMPORTANT
     const isValidated = this.FormValidator();
     if (isValidated[0]) {
       if (isValidated[0] && isValidated[1]) {
-        // ! this if is for return trip
+        // this if is for return trip
+        if (!this.returnDateValidator()) {
+          return;
+        }
         const returnForm = this.returnForm.getRawValue();
         const convertedDate = this.dateConverter(returnForm.date.toString()); // this is the final coverted date
         const unformatedTime = new Date(
@@ -215,10 +217,8 @@ export class TripOperationComponent implements OnInit {
           returnForm.busNo,
           this.companyId
         );
-        // console.log(newReturnTrip);
-        this.tripService.addTrip(newReturnTrip);
+        this.tripService.addTrip(newReturnTrip, returnForm.date);
       }
-
       const convertedDate = this.dateConverter(this.Form.value.date); // this is the final coverted date
       const unformatedTime = new Date(
         this.Form.value.time
@@ -236,10 +236,21 @@ export class TripOperationComponent implements OnInit {
         this.companyId
       );
       // console.log(newTrip);
-      this.tripService.addTrip(newTrip).then((_) => {
+      this.tripService.addTrip(newTrip, this.Form.value.date).then((_) => {
         this.Form.reset();
+        this.Form.setValue({
+          date: null,
+          time: 'Sun Feb 28 2021 10:00:48 GMT+0300 (Moscow Standard Time)',
+          startingCity: '',
+          destinationCity: '',
+          busNo: '',
+        });
+        this.isModalVisible = false;
         this.selectedDriver = '';
         this.startingPlace = [];
+        this.busesList = [];
+        this.SPList = [];
+        this.driversList = [];
         if (this.returningTrip) {
           this.returnForm.reset();
           this.returnStartingPlace = [];
@@ -261,7 +272,7 @@ export class TripOperationComponent implements OnInit {
       ['Wednesday', 'ረቡዕ'],
       ['Thursday', 'ሐሙስ'],
       ['Friday', 'አርብ'],
-      ['Saturday', 'ቅዳሜ'],
+      ['Saterday', 'ቅዳሜ'],
       ['Sunday', 'እሁድ'],
     ]);
 
@@ -294,7 +305,7 @@ export class TripOperationComponent implements OnInit {
       '-' +
       ethDate[3];
 
-    return grigDate + '/' + ethDate;
+    return grigDate + ' / ' + ethDate;
   }
 
   private returnDateCalc(DMY: string) {
@@ -334,16 +345,52 @@ export class TripOperationComponent implements OnInit {
     // return DMY;
   }
 
+  private returnDateValidator() {
+    let isValidated = true;
+    // if (!this.returnForm.value.date) {
+    //   return;
+    // }
+
+    if (
+      !this.tripService.onTripValidationforReturnTrip(
+        this.Form.value.busNo,
+        new Date(this.returnForm.value.date).toLocaleDateString(),
+        'equal'
+      )
+    ) {
+      isValidated = false;
+      this.returnForm.patchValue({ date: null });
+      this.message.create(
+        'error',
+        `Selected return trip date is invalid\n Another trip appointed on selected date!!`
+      );
+    }
+    return isValidated;
+  }
+
   clickSwitch() {
     for (const i in this.Form.controls) {
       this.Form.controls[i].markAsDirty();
       this.Form.controls[i].updateValueAndValidity();
     }
     if (this.Form.valid && this.returningTrip) {
+      if (
+        !this.tripService.onTripValidationforReturnTrip(
+          this.Form.value.busNo,
+          new Date(this.Form.value.date).toLocaleDateString(),
+          'comp'
+        )
+      ) {
+        this.returningTrip = false;
+        this.message.create(
+          'error',
+          `Selected Bus has been registered for another Trip before / after one day!!`
+        );
+        return;
+      }
       let date = this.Form.value.date.toString();
       const param = date.substr(4, 11);
       const nextDate = this.returnDateCalc(param);
-
       date = date.replace(param, nextDate);
 
       this.returnForm.patchValue({
@@ -353,6 +400,7 @@ export class TripOperationComponent implements OnInit {
         destinationCity: this.Form.value.startingCity,
         busNo: this.Form.value.busNo,
       });
+
       this.RSPchanged();
     } else {
       this.returningTrip = false;
@@ -360,6 +408,14 @@ export class TripOperationComponent implements OnInit {
         'error',
         `Please fill all fields of the first trip form!!`
       );
+    }
+  }
+
+  dateChanged() {
+    const date = this.Form.value.date;
+    if (date != '' && date != null) {
+      const localDateString = new Date(date).toLocaleDateString();
+      this.tripService.setBuses(localDateString);
     }
   }
 
@@ -500,6 +556,5 @@ export class TripOperationComponent implements OnInit {
     });
 
     this.tripService.setDestination();
-    this.tripService.setBuses();
   }
 }

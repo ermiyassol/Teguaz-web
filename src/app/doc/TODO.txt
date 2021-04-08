@@ -11,10 +11,12 @@ tid: tripId
 date: tripDate
 }
 
+when the switch clicked
+- selected bus next date status must be checked
+
 
 todo today
-- date for the returning trip is not incrimented
-- returning place does not check pre checked value - does not reload correctly
+- when the date is selected only available buses must be showed on the bus select
 
 
 
