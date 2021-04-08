@@ -52,7 +52,7 @@ export class EmployeeAccountComponent implements OnInit {
       .then(() => {
         this.message.create(
           'success',
-          `${this.listOfEmployees[index]['fullName']}'s account has been updated successfully`
+          `${this.listOfEmployees[index].fullName}'s account has been updated successfully`
         );
       });
   }
@@ -106,6 +106,7 @@ export class EmployeeAccountComponent implements OnInit {
       );
       this.employeeService.addEmployee(employee).subscribe(
         () => {
+          this.form.reset();
           this.message.create(
             'success',
             `Account has been created for ${fullName}`
@@ -131,10 +132,10 @@ export class EmployeeAccountComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      fullName: ['Ermiyas Solomon', [Validators.required]],
-      role: ['Ticket Seller', [Validators.required]],
-      password: ['112233', [Validators.required, Validators.minLength(6)]],
-      email: ['ermiyasst@gmail.com', [Validators.required, Validators.email]],
+      fullName: [null, [Validators.required]],
+      role: [null, [Validators.required]],
+      password: [null, [Validators.required, Validators.minLength(6)]],
+      email: [null, [Validators.required, Validators.email]],
       phoneNumber: [
         '0939866118',
         [

@@ -33,6 +33,8 @@ import { EmployeeAccountComponent } from './main/employee-account/employee-accou
 import { BusCrudComponent } from './main/bus-crud/bus-crud.component';
 import { PlaceCrudComponent } from './main/place-crud/place-crud.component';
 import { TripOperationComponent } from './main/trip-operation/trip-operation.component';
+import { TripListComponent } from './main/trip-list/trip-list.component';
+import { TripDetailComponent } from './main/trip-detail/trip-detail.component';
 
 registerLocaleData(en);
 
@@ -51,6 +53,8 @@ registerLocaleData(en);
     BusCrudComponent,
     PlaceCrudComponent,
     TripOperationComponent,
+    TripListComponent,
+    TripDetailComponent,
   ],
   imports: [
     BrowserModule,

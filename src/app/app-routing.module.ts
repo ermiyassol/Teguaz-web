@@ -1,3 +1,5 @@
+import { TripDetailComponent } from './main/trip-detail/trip-detail.component';
+import { TripListComponent } from './main/trip-list/trip-list.component';
 import { TripOperationComponent } from './main/trip-operation/trip-operation.component';
 import { BusCrudComponent } from './main/bus-crud/bus-crud.component';
 import { EmployeeAccountComponent } from './main/employee-account/employee-account.component';
@@ -31,6 +33,8 @@ const routes: Routes = [
       { path: 'bus_CRUD', component: BusCrudComponent },
       { path: 'destination_CRUD', component: PlaceCrudComponent },
       { path: 'trip/planning', component: TripOperationComponent },
+      { path: 'trip/list', component: TripListComponent },
+      { path: ':id/trip/detail', component: TripDetailComponent },
     ],
   },
   // { path: '**', component: PageNotFoundComponent },

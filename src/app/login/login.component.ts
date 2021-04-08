@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.isLoading = true;
       const email = this.form.value.email;
       const password = this.form.value.password;
-      this.auth.login({ email: email, password: password }).subscribe(
+      this.auth.login({ email, password }).subscribe(
         () => {},
         (error) => {
           this.isLoading = false;

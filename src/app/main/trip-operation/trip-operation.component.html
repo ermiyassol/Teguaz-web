@@ -87,7 +87,10 @@
 >
   <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 3 }">
     <nz-form-control nzErrorTip="please select Trip Date!">
-      <nz-date-picker formControlName="date"></nz-date-picker>
+      <nz-date-picker
+        formControlName="date"
+        (ngModelChange)="dateChanged()"
+      ></nz-date-picker>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 3 }">
@@ -137,13 +140,21 @@
   </nz-form-item>
   <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 6 }">
     <nz-form-control nzErrorTip="Please select Bus!">
-      <nz-select formControlName="busNo" [nzOptions]="busesList">
+      <!-- <nz-select
+        formControlName="busNo"
+        [nzOptions]="busesList"
+        (ngModelChange)="showDriversModal()"
+      >
         <nz-option nzValue="" nzLabel="Bus NO."></nz-option>
-        <!-- <nz-option
+
+      </nz-select> -->
+      <nz-select formControlName="busNo" (ngModelChange)="showDriversModal()">
+        <nz-option nzValue="" nzLabel="Bus NO."></nz-option>
+        <nz-option
           *ngFor="let bus of busesList"
           [nzValue]="bus.busNo"
           [nzLabel]="bus.busNo"
-        ></nz-option> -->
+        ></nz-option>
       </nz-select>
     </nz-form-control>
   </nz-form-item>
@@ -152,7 +163,7 @@
 <span>TRIP STARTING PLACES LIST; SELECT AT LEAST ONE</span> <br />
 <nz-checkbox-group
   [(ngModel)]="SPList"
-  (ngModelChange)="log(SPList)"
+  (ngModelChange)="log('firstTrip')"
 ></nz-checkbox-group>
 <br />
 <nz-divider nzDashed [nzText]="text" *ngIf="returningTrip">
@@ -221,18 +232,16 @@
   </nz-form-item>
   <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 6 }">
     <nz-form-control nzErrorTip="Please select Bus!">
-      <nz-select formControlName="busNo" [nzOptions]="busesList">
-        <nz-option nzValue="" nzLabel="Bus NO." selected></nz-option>
-        <!-- <nz-option
-          *ngFor="let bus of busesList"
-          [nzValue]="bus.busNo"
-          [nzLabel]="bus.busNo"
-        ></nz-option> -->
-      </nz-select>
+      <input nz-input formControlName="busNo" />
     </nz-form-control>
   </nz-form-item>
 </form>
 <br />
+<!-- <span>TRIP STARTING PLACES LIST; SELECT AT LEAST ONE</span> <br />
+<nz-checkbox-group
+  [(ngModel)]="SPList"
+  (ngModelChange)="log(SPList)"
+></nz-checkbox-group> -->
 <span *ngIf="returningTrip"
   >TRIP STARTING PLACES LIST; SELECT AT LEAST ONE</span
 >
@@ -240,10 +249,27 @@
 <nz-checkbox-group
   *ngIf="returningTrip"
   [(ngModel)]="returnSPList"
-  (ngModelChange)="log(returnSPList)"
+  (ngModelChange)="log('returnTrip')"
 ></nz-checkbox-group>
 <br *ngIf="returningTrip" />
 <br *ngIf="returningTrip" />
 <button nz-button nzType="primary" (click)="submitForm()">
   <i nz-icon nzType="check" nzTheme="outline"></i>Add Trip
 </button>
+<nz-modal
+  [(nzVisible)]="isModalVisible"
+  nzTitle="Please Select Driver"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+>
+  <ng-container *nzModalContent>
+    <nz-radio-group
+      [(ngModel)]="selectedDriver"
+      *ngFor="let driver of driversList"
+    >
+      <label nz-radio [nzValue]="driver">{{ driver }}</label>
+      <!-- <label nz-radio nzValue="C">C</label>
+      <label nz-radio nzValue="D">D</label> -->
+    </nz-radio-group>
+  </ng-container>
+</nz-modal>
