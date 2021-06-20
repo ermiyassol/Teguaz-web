@@ -115,18 +115,18 @@ export class Auth {
       .equalTo(id)
       .once('value', (snapshot) => {
         // snapshot.val();
-        console.log(snapshot.val());
+        // console.log(snapshot.val());
         for (const key in snapshot.val()) {
-          console.log(snapshot.val()[key]['cid']);
+          // console.log(snapshot.val()[key]['cid']);
           const cid =
-            snapshot.val()[key]['cid'] != null
-              ? snapshot.val()[key]['cid']
+            snapshot.val()[key].cid != null
+              ? snapshot.val()[key].cid
               : '';
           const eid =
-            snapshot.val()[key]['eid'] != null
-              ? snapshot.val()[key]['eid']
+            snapshot.val()[key].eid != null
+              ? snapshot.val()[key].eid
               : '';
-          const role = snapshot.val()[key]['role'];
+          const role = snapshot.val()[key].role;
           const expirationDate = new Date(
             new Date().getTime() + expiresIn * 1000
           );
@@ -140,7 +140,7 @@ export class Auth {
             token,
             expirationDate
           );
-          console.log(user);
+          // console.log(user);
           localStorage.setItem('userData', JSON.stringify(user));
           this.autoLogout(expiresIn * 1000);
           this.user.next(user);

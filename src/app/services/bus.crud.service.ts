@@ -49,6 +49,10 @@ export class BusCrudService {
     return this.Buses.length;
   }
 
+  fetchBusSeatNo(busNo: string) {
+    return this.Buses.filter((bus) => bus.busNo == busNo)[0].seatNo;
+  }
+
   setDrivers() {
     this.db.database
       .ref('company/' + this.companyId + '/employee')

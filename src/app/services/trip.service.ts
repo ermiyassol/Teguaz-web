@@ -1,3 +1,4 @@
+import { PassengerModel } from './../models/passenger.model';
 import { TripModel } from './../models/trip.model';
 import { SPModel } from './../models/startingPlace.model';
 import { BusModel, onTrip } from './../models/bus.model';
@@ -36,6 +37,10 @@ export class TripService {
     private memory: MemoryService
   ) {
     this.companyId = this.memory.getCompanyId();
+  }
+
+  fetchTripDetail(index: number) {
+    return this.Trips[index];
   }
 
   returnDrivers(busNo: string) {
@@ -256,7 +261,27 @@ export class TripService {
             let temp: TripModel;
             temp = snapshot.val()[key];
             temp.key = key;
-            temp.passengers = temp.passengers ? temp.passengers : [];
+            if (temp.passengers) {
+              const passengers: PassengerModel[] = [];
+              for (const key in temp.passengers) {
+                if (temp.passengers.hasOwnProperty(key)) {
+                  let passTemp: PassengerModel;
+                  passTemp = temp.passengers[key];
+                  passTemp.key = key;
+                  passTemp.bookingMethod = passTemp.bookingMethod
+                    ? passTemp.bookingMethod
+                    : 'App';
+                  passTemp.startingPlace = passTemp.startingPlace
+                    .toString()
+                    .split(' / ');
+                  passengers.push(passTemp);
+                }
+              }
+              temp.passengers = passengers;
+            } else {
+              temp.passengers = [];
+            }
+            // temp.passengers = temp.passengers ? temp.passengers : [];
             this.Trips.push(temp);
           }
         }
