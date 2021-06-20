@@ -21,7 +21,13 @@
       nzMode="inline"
       [nzInlineCollapsed]="isCollapsed"
     >
-      <li nz-submenu nzOpen nzTitle="Admin" nzIcon="user">
+      <li
+        nz-submenu
+        nzOpen
+        nzTitle="Admin"
+        nzIcon="user"
+        *ngIf="role == 'Super Admin'"
+      >
         <ul>
           <li nz-menu-item nzMatchRouter>
             <a
@@ -42,7 +48,13 @@
           </li> -->
         </ul>
       </li>
-      <li nz-submenu nzOpen nzTitle="CRUD Operations" nzIcon="swap">
+      <li
+        nz-submenu
+        nzOpen
+        nzTitle="CRUD Operations"
+        nzIcon="swap"
+        *ngIf="role == 'Admin'"
+      >
         <ul>
           <li
             nz-menu-item
@@ -70,7 +82,7 @@
           </li>
         </ul>
       </li>
-      <!--  -->
+
       <li nz-submenu nzOpen nzTitle="Trips" nzIcon="gold">
         <ul>
           <li
@@ -78,6 +90,7 @@
             nzMatchRouter
             routerLink="trip/planning"
             routerLinkActive="ant-menu-item-selected"
+            *ngIf="role == 'Admin'"
           >
             <a>Planning</a>
           </li>
@@ -86,6 +99,7 @@
             nzMatchRouter
             routerLink="trip/list"
             routerLinkActive="ant-menu-item-selected"
+            *ngIf="role == 'Admin' || role == 'Ticket Seller'"
           >
             <a>Appointed List</a>
           </li>
