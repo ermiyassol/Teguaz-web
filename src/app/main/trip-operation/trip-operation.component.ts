@@ -417,6 +417,7 @@ export class TripOperationComponent implements OnInit {
     const date = this.Form.value.date;
     if (date != '' && date != null) {
       const localDateString = new Date(date).toLocaleDateString();
+      console.log(localDateString);
       this.tripService.setBuses(localDateString);
     }
   }

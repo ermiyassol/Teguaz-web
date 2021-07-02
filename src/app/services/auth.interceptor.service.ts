@@ -15,7 +15,6 @@ export class AuthInterceptor {
       take(1),
       exhaustMap((user) => {
         if (!user) {
-          console.log('params not working');
           return next.handle(req);
         }
         console.log('params working');

@@ -25,17 +25,14 @@ import { environment } from 'src/environments/environment';
 export class BusCrudService {
   Buses: BusModel[] = [];
   Drivers: EmployeeModel[] = [];
-  companyId: string;
   busList = new Subject<BusModel[]>();
   driversList = new Subject<EmployeeModel[]>();
 
   constructor(
-    private http: HttpClient,
+    // private http: HttpClient,
     private db: AngularFireDatabase,
     private memory: MemoryService
-  ) {
-    this.companyId = this.memory.getCompanyId();
-  }
+  ) {}
 
   getBus(id: number) {
     return this.Buses[id];
@@ -43,6 +40,10 @@ export class BusCrudService {
 
   retrieveBuses() {
     return this.Buses;
+  }
+
+  retrieveDrivers() {
+    return this.Drivers;
   }
 
   checkBus() {
@@ -54,11 +55,12 @@ export class BusCrudService {
   }
 
   setDrivers() {
+    const companyId = this.memory.getCompanyId();
     this.db.database
-      .ref('company/' + this.companyId + '/employee')
+      .ref('company/' + companyId + '/employee')
       .orderByChild('role')
       .equalTo('Driver')
-      .once('value', (snapshot) => {
+      .on('value', (snapshot) => {
         this.Drivers = [];
         for (const key in snapshot.val()) {
           if (snapshot.val().hasOwnProperty(key)) {
@@ -73,10 +75,11 @@ export class BusCrudService {
   }
 
   deleteBus(bus: BusModel) {
+    const companyId = this.memory.getCompanyId();
     const key = bus.key!;
     const index = this.Buses.indexOf(bus);
     return this.db
-      .list('company/' + this.companyId + '/bus')
+      .list('company/' + companyId + '/bus')
       .remove(key)
       .then(() => {
         this.Buses.splice(index, 1);
@@ -100,7 +103,8 @@ export class BusCrudService {
   }
 
   addBus(busDesc: BusModel) {
-    return this.db.list('company/' + this.companyId + '/bus').push({
+    const companyId = this.memory.getCompanyId();
+    return this.db.list('company/' + companyId + '/bus').push({
       busNo: busDesc.busNo,
       drivers: busDesc.drivers,
       seatNo: busDesc.seatNo,
@@ -127,7 +131,7 @@ export class BusCrudService {
     //             .list('users')
     //             .push({
     //               uid: res.localId,
-    //               cid: this.companyId,
+    //               cid: companyId,
     //               eid: eid,
     //               role: busDesc.role,
     //             })
@@ -138,8 +142,12 @@ export class BusCrudService {
   }
 
   setBuses() {
-    const ref = this.db.database.ref('company/' + this.companyId + '/bus');
-    ref.once('value', (snapshot) => {
+    const companyId = this.memory.getCompanyId();
+    // this.Buses = [];
+    const ref = this.db.database.ref('company/' + companyId + '/bus');
+    // this.childChanged();
+    // this.childAdded();
+    return ref.on('value', (snapshot) => {
       this.Buses = [];
       for (const key in snapshot.val()) {
         if (snapshot.val().hasOwnProperty(key)) {
@@ -152,15 +160,12 @@ export class BusCrudService {
       }
       this.busList.next(this.Buses);
     });
-    this.childChanged();
-    this.childAdded();
   }
 
   // this one is used for every company sub property changes trip, name, passengers of trip . . . . . . etc
   childChanged() {
-    const ref = this.db.database
-      .ref()
-      .child('company/' + this.companyId + '/bus');
+    const companyId = this.memory.getCompanyId();
+    const ref = this.db.database.ref().child('company/' + companyId + '/bus');
     ref.on('child_changed', (snapshot) => {
       this.Buses.forEach((cur, index) => {
         if (cur.key === snapshot.key) {
@@ -174,9 +179,8 @@ export class BusCrudService {
   }
 
   childAdded() {
-    const ref = this.db.database
-      .ref()
-      .child('company/' + this.companyId + '/bus');
+    const companyId = this.memory.getCompanyId();
+    const ref = this.db.database.ref().child('company/' + companyId + '/bus');
     ref.on('child_added', (snapshot) => {
       let temp: BusModel;
       temp = snapshot.val();
@@ -187,8 +191,9 @@ export class BusCrudService {
   }
 
   updatebus(bus: BusModel, key: string) {
+    const companyId = this.memory.getCompanyId();
     bus.key = null!;
-    return this.db.list('company/' + this.companyId + '/bus').update(key, bus);
+    return this.db.list('company/' + companyId + '/bus').update(key, bus);
   }
 
   // deleteBus(emp: BusModel) {
@@ -206,7 +211,7 @@ export class BusCrudService {
   //           .remove(childKey)
   //           .then(() => {
   //             this.db
-  //               .list('company/' + this.companyId + '/bus')
+  //               .list('company/' + companyId + '/bus')
   //               .remove(key)
   //               .then(() => {
   //                 this.Buses.splice(index, 1);

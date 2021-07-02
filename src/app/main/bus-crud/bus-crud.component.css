@@ -17,3 +17,7 @@ nz-form-item {
 .editError {
   border: 1px solid red;
 }
+
+nz-alert {
+  text-align: center;
+}

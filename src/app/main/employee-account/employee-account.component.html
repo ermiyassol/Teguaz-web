@@ -1,5 +1,5 @@
-<nz-alert [nzType]="'info'" [nzMessage]="'Create Admin Form'"> </nz-alert>
-<br />
+<nz-alert [nzType]="'info'" [nzMessage]="'Create Account For Employees'">
+</nz-alert>
 <br />
 <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
 <form
@@ -47,9 +47,9 @@
           [nzAutocomplete]="auto"
         />
         <nz-autocomplete #auto>
-          <nz-auto-option *ngFor="let option of options" [nzValue]="option">{{
-            option
-          }}</nz-auto-option>
+          <nz-auto-option *ngFor="let option of options" [nzValue]="option"
+            >{{ option }}</nz-auto-option
+          >
         </nz-autocomplete>
       </nz-input-group>
     </nz-form-control>
@@ -195,7 +195,7 @@
 
 <!-- auto complete -->
 <nz-autocomplete #empRole>
-  <nz-auto-option *ngFor="let option of empRoles" [nzValue]="option">{{
-    option
-  }}</nz-auto-option>
+  <nz-auto-option *ngFor="let option of empRoles" [nzValue]="option"
+    >{{ option }}</nz-auto-option
+  >
 </nz-autocomplete>

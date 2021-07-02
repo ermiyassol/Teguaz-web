@@ -22,6 +22,14 @@
       [nzInlineCollapsed]="isCollapsed"
     >
       <li
+        nz-menu-item
+        routerLink="entry"
+        routerLinkActive="ant-menu-item-selected"
+      >
+        <i nz-icon nzType="dashboard"></i>
+        <span>Dashboard</span>
+      </li>
+      <li
         nz-submenu
         nzOpen
         nzTitle="Admin"
@@ -83,7 +91,13 @@
         </ul>
       </li>
 
-      <li nz-submenu nzOpen nzTitle="Trips" nzIcon="gold">
+      <li
+        nz-submenu
+        nzOpen
+        nzTitle="Trips"
+        nzIcon="gold"
+        *ngIf="role != 'Super Admin'"
+      >
         <ul>
           <li
             nz-menu-item
@@ -124,6 +138,14 @@
       <!-- <li nz-submenu nzOpen nzTitle="Bus" nzIcon="key">
         <ul></ul>
       </li> -->
+      <li
+        nz-menu-item
+        routerLink="report"
+        routerLinkActive="ant-menu-item-selected"
+      >
+        <i nz-icon nzType="file-text"></i>
+        <span>Report</span>
+      </li>
     </ul>
   </nz-sider>
   <nz-layout>
@@ -157,7 +179,11 @@
               nz-tooltip
             ></i>
           </li> -->
-          <li class="right-header">
+          <li class="right-header" nz-row>
+            <div class="datetime">
+              <span>{{date}}</span> :
+              <span>{{time}}</span>
+            </div>
             <a nz-dropdown [nzDropdownMenu]="menu">
               <i nz-icon nzType="setting" nzTheme="outline"></i>
             </a>
@@ -178,7 +204,18 @@
     </nz-header>
     <nz-content>
       <div class="inner-content">
-        <router-outlet></router-outlet>
+        <nz-result
+          nzStatus="warning"
+          nzTitle="Driver Page Is Not Developed yet!!"
+          *ngIf="role == 'Driver'"
+        >
+          <div nz-result-extra>
+            <button nz-button nzType="primary" (click)="navigateToLogin()">
+              Return To Login Screen
+            </button>
+          </div>
+        </nz-result>
+        <router-outlet *ngIf="role != 'Driver'"></router-outlet>
       </div>
     </nz-content>
   </nz-layout>

@@ -13,3 +13,7 @@ nz-form-item {
 .delete-btn:hover {
   color: rgb(180, 0, 0);
 }
+
+nz-alert {
+  text-align: center;
+}

@@ -96,8 +96,14 @@ export class PlaceCrudComponent implements OnInit {
     this.placeService.deletePlace(this.listOfPlaces[id]);
   }
 
-  submitForm(): void {
+  submitForm() {
+    // console.log('button not working');
     for (const i in this.form.controls) {
+      if (this.form.value.discount == null) {
+        this.form.patchValue({ discount: 0 });
+      }
+      // console.log('error');
+      // console.log(this.form.value);
       this.form.controls[i].markAsDirty();
       this.form.controls[i].updateValueAndValidity();
     }
@@ -110,8 +116,10 @@ export class PlaceCrudComponent implements OnInit {
       const price = this.form.value.price;
       const discount = this.form.value.discount;
       const Place = new PlaceModel(destination, price, discount);
+      console.log(Place);
       this.placeService.addPlace(Place).then(() => {
         this.message.create('success', `New Place Registered Successfully`);
+        this.form.reset();
       });
     }
   }

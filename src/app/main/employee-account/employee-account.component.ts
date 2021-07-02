@@ -93,7 +93,7 @@ export class EmployeeAccountComponent implements OnInit {
       const regDate = new Date().toUTCString();
       const fullName = this.form.value.fullName;
       const email = this.form.value.email;
-      const password = this.form.value.fullName;
+      const password = this.form.value.password;
       const role = this.form.value.role;
       const phoneNumber = this.form.value.phoneNumber;
       const employee = new EmployeeModel(
@@ -137,7 +137,7 @@ export class EmployeeAccountComponent implements OnInit {
       password: [null, [Validators.required, Validators.minLength(6)]],
       email: [null, [Validators.required, Validators.email]],
       phoneNumber: [
-        '0939866118',
+        null,
         [
           Validators.required,
           Validators.minLength(10),
@@ -147,13 +147,14 @@ export class EmployeeAccountComponent implements OnInit {
       ],
     });
 
-    if (!this.employeeService.checkEmployee()) {
-      this.employeeService.setEmployees();
-    } else {
-      this.listOfEmployees = this.employeeService.retriveEmployees();
-      this.updateEditCache();
-    }
+    // if (!this.employeeService.checkEmployee()) {
+    //   this.employeeService.setEmployees();
+    // } else {
 
+    // }
+
+    this.listOfEmployees = this.employeeService.retriveEmployees();
+    this.updateEditCache();
     this.employeeService.employeeList.subscribe((response) => {
       this.listOfEmployees = response;
       this.updateEditCache();

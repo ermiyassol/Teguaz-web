@@ -93,7 +93,7 @@ export class AdminAccountService {
               const cid = response.key;
               this.db
                 .list('users')
-                .push({ uid: res.localId, cid: cid, eid: null, role: 'Admin' })
+                .push({ uid: res.localId, cid, eid: null, role: 'Admin' })
                 .then();
             });
         })
@@ -101,21 +101,36 @@ export class AdminAccountService {
   }
 
   setAdmins() {
+    this.Admins = [];
     const ref = this.db.database.ref('company');
-    ref.once('value', (snapshot) => {
-      this.Admins = [];
+    return ref.on('value', (snapshot) => {
       for (const key in snapshot.val()) {
         if (snapshot.val().hasOwnProperty(key)) {
           let temp: AdminModel;
           temp = snapshot.val()[key];
           temp.key = key;
+          temp.place = temp.place ? this.setlevelTwoArray(temp.place) : [];
+          temp.bus = temp.bus ? this.setlevelTwoArray(temp.bus) : [];
           this.Admins.push(temp);
         }
       }
       this.adminList.next(this.Admins);
     });
-    this.childChanged();
-    this.childAdded();
+    // this.childChanged();
+    // this.childAdded();
+  }
+
+  private setlevelTwoArray(value: any) {
+    const returnValue = [];
+    for (const key in value) {
+      if (value.hasOwnProperty(key)) {
+        let temp;
+        temp = value[key];
+        temp.key = key;
+        returnValue.push(temp);
+      }
+    }
+    return returnValue;
   }
 
   // this one is used for every company sub property changes trip, name, passengers of trip . . . . . . etc

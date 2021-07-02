@@ -63,8 +63,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      email: ['ermiyasst@gmail.com', [Validators.required, Validators.email]],
-      password: ['123456', [Validators.required, Validators.minLength(6)]],
+      email: [null, [Validators.required, Validators.email]],
+      password: [null, [Validators.required, Validators.minLength(6)]],
       remember: [true],
     });
 
@@ -81,13 +81,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   handleOk(): void {
-    console.log('Button ok clicked!');
     this.isVisible = false;
   }
 
   handleCancel(): void {
-    console.log('Button cancel clicked!');
     this.isVisible = false;
+  }
+
+  displayResetPasswordPage() {
+    this.routes.navigate(['reset_password']);
   }
 
   ngOnDestroy() {

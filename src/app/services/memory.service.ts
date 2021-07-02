@@ -23,5 +23,9 @@ export class MemoryService {
     console.log(this.userData);
   }
 
+  setUserData() {
+    this.userData = JSON.parse(localStorage.getItem('userData')!);
+  }
+
   constructor() {}
 }

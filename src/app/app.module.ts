@@ -35,6 +35,8 @@ import { PlaceCrudComponent } from './main/place-crud/place-crud.component';
 import { TripOperationComponent } from './main/trip-operation/trip-operation.component';
 import { TripListComponent } from './main/trip-list/trip-list.component';
 import { TripDetailComponent } from './main/trip-detail/trip-detail.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { ReportComponent } from './main/report/report.component';
 
 registerLocaleData(en);
 
@@ -55,6 +57,8 @@ registerLocaleData(en);
     TripOperationComponent,
     TripListComponent,
     TripDetailComponent,
+    ResetPasswordComponent,
+    ReportComponent,
   ],
   imports: [
     BrowserModule,

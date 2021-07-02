@@ -185,22 +185,23 @@ export class BusCrudComponent implements OnInit {
       seatNo: [null, [Validators.required]],
     });
 
+    this.listOfBuses = this.busService.retrieveBuses();
+    this.updateEditCache();
     this.busService.busList.subscribe((response) => {
       this.listOfBuses = response;
       this.updateEditCache();
     });
 
+    this.Drivers = this.busService.retrieveDrivers();
     this.busService.driversList.subscribe((response) => {
       this.Drivers = response;
-      console.log(response);
     });
 
-    this.busService.setDrivers();
-    if (!this.busService.checkBus()) {
-      this.busService.setBuses();
-    } else {
-      this.listOfBuses = this.busService.retrieveBuses();
-      this.updateEditCache();
-    }
+    // this.busService.setDrivers();
+    // if (!this.busService.checkBus()) {
+    //   this.busService.setBuses();
+    // } else {
+
+    // }
   }
 }

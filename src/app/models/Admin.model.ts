@@ -9,6 +9,8 @@ export class AdminModel {
     public phoneNumber: string,
     public regDate: string,
     public logoUrl: string,
+    public place: any[] = [],
+    public bus: any[] = [],
     public key?: string
   ) {}
 }

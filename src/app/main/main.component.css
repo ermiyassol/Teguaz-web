@@ -102,3 +102,13 @@ nz-content {
 .header-menu {
   padding-right: 40px;
 }
+
+.datetime {
+  margin-right: 20px;
+}
+
+.datetime span {
+  font-weight: bold;
+  color: #1890ff;
+  /* margin-left: 8px; */
+}

@@ -18,7 +18,6 @@ interface check {
   providedIn: 'root',
 })
 export class TripService {
-  companyId: string;
   Destinations: string[] = [];
   destinationList = new Subject<string[]>();
   Buses: BusModel[] = [];
@@ -30,13 +29,27 @@ export class TripService {
   driversList = new Subject<string[]>();
   Trips: TripModel[] = [];
   tripsList = new Subject<TripModel[]>();
+  city: string;
+  type: string;
 
   constructor(
     private http: HttpClient,
     private db: AngularFireDatabase,
     private memory: MemoryService
-  ) {
-    this.companyId = this.memory.getCompanyId();
+  ) {}
+
+  retrieveTrips() {
+    return this.Trips;
+  }
+
+  countUpcomingTrips(companyId: string) {
+    let returnVal = 0;
+    this.Trips.forEach((trip) => {
+      if (trip.companyId == companyId) {
+        returnVal++;
+      }
+    });
+    return returnVal;
   }
 
   fetchTripDetail(index: number) {
@@ -59,6 +72,7 @@ export class TripService {
     type: string, // SP / RSP
     destinationCity: string
   ) {
+    const companyId = this.memory.getCompanyId();
     const temp: SPModel = type == 'SP' ? this.SP : this.RSP;
 
     temp.places.forEach((place, pindex) => {
@@ -67,7 +81,7 @@ export class TripService {
           if (place.selectedBy?.length == 0) {
             if (updatedPlace.checked == true) {
               temp.places[pindex].selectedBy?.push({
-                cid: this.companyId,
+                cid: companyId,
                 destination: destinationCity,
               });
             }
@@ -77,12 +91,12 @@ export class TripService {
           );
           place.selectedBy?.forEach((selected, sindex) => {
             if (
-              selected.cid == this.companyId &&
+              selected.cid == companyId &&
               updatedPlace.checked == true &&
               selected.destination == destinationCity
             ) {
             } else if (
-              selected.cid == this.companyId &&
+              selected.cid == companyId &&
               updatedPlace.checked == false &&
               selected.destination == destinationCity
             ) {
@@ -93,7 +107,7 @@ export class TripService {
               !selectedDestinations?.includes(destinationCity)
             ) {
               temp.places[pindex].selectedBy?.push({
-                cid: this.companyId,
+                cid: companyId,
                 destination: destinationCity,
               });
             } else {
@@ -107,8 +121,9 @@ export class TripService {
   }
 
   setDestination() {
-    const ref = this.db.database.ref('company/' + this.companyId + '/place');
-    ref.once('value', (snapshot) => {
+    const companyId = this.memory.getCompanyId();
+    const ref = this.db.database.ref('company/' + companyId + '/place');
+    ref.on('value', (snapshot) => {
       this.Destinations = [];
       for (const key in snapshot.val()) {
         if (snapshot.val().hasOwnProperty(key)) {
@@ -152,7 +167,8 @@ export class TripService {
   }
 
   setBuses(date: string) {
-    const ref = this.db.database.ref('company/' + this.companyId + '/bus');
+    const companyId = this.memory.getCompanyId();
+    const ref = this.db.database.ref('company/' + companyId + '/bus');
     ref.on('value', (snapshot) => {
       this.Buses = [];
       for (const key in snapshot.val()) {
@@ -162,7 +178,15 @@ export class TripService {
           temp.key = key;
           temp.onTrip = temp.onTrip ? temp.onTrip : [];
           // if (!temp.onTrip) { // ! do the date validation here
-          const onTripValidator = temp.onTrip.filter((cur) => cur.date == date);
+          const onTripValidator = temp.onTrip.filter(
+            (cur) => cur.date == date
+            // const dateArr = date.split('/');
+            // const busDateArr = cur.date.split('/');
+            // const condition = date == cur.date ||
+            // if(dateArr[0] == busDateArr[0]) {
+            // todo work bus selection algorithem
+            // }
+          );
           if (onTripValidator.length == 0) {
             this.Buses.push(temp);
           }
@@ -175,12 +199,14 @@ export class TripService {
   }
 
   setSP(city: string, type: string) {
+    this.city = city;
+    this.type = type;
     const ref = this.db.database.ref('starting_places');
     ref
       .orderByChild('city')
-      .equalTo(city)
+      .equalTo(this.city)
       .on('value', (snapshot) => {
-        // this.SP = {};
+        console.log('firebase fetching working!!');
         for (const key in snapshot.val()) {
           if (snapshot.val().hasOwnProperty(key)) {
             let temp: SPModel;
@@ -191,10 +217,12 @@ export class TripService {
                 ? cur.selectedBy
                 : [];
             });
-            type == 'SP' ? (this.SP = temp) : (this.RSP = temp);
+            this.type == 'SP' ? (this.SP = temp) : (this.RSP = temp);
           }
         }
-        type == 'SP' ? this.SPList.next(this.SP) : this.RSPList.next(this.RSP);
+        this.type == 'SP'
+          ? this.SPList.next(this.SP)
+          : this.RSPList.next(this.RSP);
       });
   }
 
@@ -228,6 +256,7 @@ export class TripService {
   }
 
   addTrip(newTrip: TripModel, date: string) {
+    const companyId = this.memory.getCompanyId();
     newTrip.passengers = [];
     newTrip.key = null!;
     return this.db
@@ -243,17 +272,19 @@ export class TripService {
         );
         selectedBus.onTrip.push(onTripValue);
         this.db
-          .list('company/' + this.companyId + '/bus')
+          .list('company/' + companyId + '/bus')
           .update(selectedBus.key!, selectedBus);
       });
   }
 
-  // this.companyId
+  // companyId
   setTrips() {
+    const companyId = this.memory.getCompanyId();
+    // this.Trips = [];
     const ref = this.db.database.ref('trip');
-    ref
+    return ref
       .orderByChild('companyId')
-      .equalTo(this.companyId)
+      .equalTo(companyId)
       .on('value', (snapshot) => {
         this.Trips = [];
         for (const key in snapshot.val()) {
