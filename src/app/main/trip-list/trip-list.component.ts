@@ -1,3 +1,4 @@
+import { BusCrudService } from 'src/app/services/bus.crud.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TripService } from './../../services/trip.service';
 import { Component, OnInit } from '@angular/core';
@@ -5,11 +6,13 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { TripModel } from 'src/app/models/trip.model';
 
 interface displayTrip {
-  bussNo: string;
+  busNo: string;
   date: string[];
   destinationCity: string[];
   driver: string;
   startingCity: string[];
+  availableSeats: number;
+  totalSeatNo: number;
 }
 
 @Component({
@@ -34,22 +37,31 @@ export class TripListComponent implements OnInit {
 
   constructor(
     private tripsService: TripService,
+    private busService: BusCrudService,
     private routes: Router,
     private route: ActivatedRoute
   ) {}
 
-  ngOnInit(): void {
-    this.tripsService.tripsList.subscribe((response) => {
-      this.trips = [];
-      response.forEach((curTrip) => {
-        this.trips.push({
-          bussNo: curTrip.busNo,
-          date: curTrip.date.split(' / '),
-          destinationCity: curTrip.destinationCity.split(' / '),
-          driver: curTrip.driver,
-          startingCity: curTrip.startingCity.split(' / '),
-        });
+  private tripSetter(response: TripModel[]) {
+    this.trips = [];
+    response.forEach((curTrip) => {
+      const totalSeatNo = this.busService.fetchBusSeatNo(curTrip.busNo);
+      this.trips.push({
+        busNo: curTrip.busNo,
+        date: curTrip.date.split(' / '),
+        destinationCity: curTrip.destinationCity.split(' / '),
+        driver: curTrip.driver,
+        startingCity: curTrip.startingCity.split(' / '),
+        availableSeats: totalSeatNo - curTrip.passengers.length,
+        totalSeatNo,
       });
+    });
+  }
+
+  ngOnInit(): void {
+    this.tripSetter(this.tripsService.retrieveTrips());
+    this.tripsService.tripsList.subscribe((response) => {
+      this.tripSetter(response);
     });
     this.tripsService.setTrips();
   }

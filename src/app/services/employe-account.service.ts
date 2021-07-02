@@ -23,16 +23,14 @@ export interface authResponse {
 })
 export class EmployeAccountService {
   Employees: EmployeeModel[] = [];
-  companyId: string;
+
   employeeList = new Subject<EmployeeModel[]>();
 
   constructor(
     private http: HttpClient,
     private db: AngularFireDatabase,
     private memory: MemoryService
-  ) {
-    this.companyId = this.memory.getCompanyId();
-  }
+  ) {}
 
   getEmployee(id: number) {
     return this.Employees[id];
@@ -61,7 +59,7 @@ export class EmployeAccountService {
   //           .remove(childKey)
   //           .then(() => {
   //             this.db
-  //               .list('company/' + this.companyId + '/employee')
+  //               .list('company/' + companyId + '/employee')
   //               .remove(key)
   //               .then(() => {
   //                 this.Employees.splice(index, 1);
@@ -73,6 +71,7 @@ export class EmployeAccountService {
   // }
 
   addEmployee(EmployeeDesc: EmployeeModel) {
+    const companyId = this.memory.getCompanyId();
     return this.http
       .post<authResponse>(
         'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
@@ -87,7 +86,7 @@ export class EmployeAccountService {
         catchError(this.handleError),
         tap((res) => {
           this.db
-            .list('company/' + this.companyId + '/employee')
+            .list('company/' + companyId + '/employee')
             .push({
               fullName: EmployeeDesc.fullName,
               phoneNumber: EmployeeDesc.phoneNumber,
@@ -101,8 +100,8 @@ export class EmployeAccountService {
                 .list('users')
                 .push({
                   uid: res.localId,
-                  cid: this.companyId,
-                  eid: eid,
+                  cid: companyId,
+                  eid,
                   role: EmployeeDesc.role,
                 })
                 .then();
@@ -112,8 +111,13 @@ export class EmployeAccountService {
   }
 
   setEmployees() {
-    const ref = this.db.database.ref('company/' + this.companyId + '/employee');
-    ref.once('value', (snapshot) => {
+    // this.Employees = [];
+    const companyId = this.memory.getCompanyId();
+    const ref = this.db.database.ref('company/' + companyId + '/employee');
+    // this.childChanged();
+    // this.childAdded();
+
+    return ref.on('value', (snapshot) => {
       this.Employees = [];
       for (const key in snapshot.val()) {
         if (snapshot.val().hasOwnProperty(key)) {
@@ -125,51 +129,51 @@ export class EmployeAccountService {
       }
       this.employeeList.next(this.Employees);
     });
-    this.childChanged();
-    this.childAdded();
   }
 
   // this one is used for every company sub property changes trip, name, passengers of trip . . . . . . etc
-  childChanged() {
-    const ref = this.db.database
-      .ref()
-      .child('company/' + this.companyId + '/employee');
-    ref.on('child_changed', (snapshot) => {
-      this.Employees.forEach((cur, index) => {
-        if (cur.key === snapshot.key) {
-          this.Employees[index] = snapshot.val();
-          this.Employees[index].key = snapshot.key;
-          // console.log('changed value called');
-        }
-      });
-      this.employeeList.next(this.Employees);
-    });
-    console.log('child changed called');
-    console.log(this.Employees);
-  }
+  // childChanged() {
+  //   const companyId = this.memory.getCompanyId();
+  //   const ref = this.db.database
+  //     .ref()
+  //     .child('company/' + companyId + '/employee');
+  //   ref.on('child_changed', (snapshot) => {
+  //     this.Employees.forEach((cur, index) => {
+  //       if (cur.key === snapshot.key) {
+  //         this.Employees[index] = snapshot.val();
+  //         this.Employees[index].key = snapshot.key;
+  //         // console.log('changed value called');
+  //       }
+  //     });
+  //     this.employeeList.next(this.Employees);
+  //   });
+  // }
 
-  childAdded() {
-    const ref = this.db.database
-      .ref()
-      .child('company/' + this.companyId + '/employee');
-    ref.on('child_added', (snapshot) => {
-      let temp: EmployeeModel;
-      temp = snapshot.val();
-      temp.key = snapshot.key!;
-      this.Employees.push(temp);
-      console.log('child added called');
-      this.employeeList.next(this.Employees);
-    });
-  }
+  // childAdded() {
+  //   const companyId = this.memory.getCompanyId();
+  //   const ref = this.db.database
+  //     .ref()
+  //     .child('company/' + companyId + '/employee');
+  //   ref.on('child_added', (snapshot) => {
+  //     let temp: EmployeeModel;
+  //     temp = snapshot.val();
+  //     temp.key = snapshot.key!;
+  //     this.Employees.push(temp);
+
+  //     this.employeeList.next(this.Employees);
+  //   });
+  // }
 
   updateEmployee(Employee: EmployeeModel, key: string) {
+    const companyId = this.memory.getCompanyId();
     Employee.key = null!;
     return this.db
-      .list('company/' + this.companyId + '/employee')
+      .list('company/' + companyId + '/employee')
       .update(key, Employee);
   }
 
   deleteEmploye(emp: EmployeeModel) {
+    const companyId = this.memory.getCompanyId();
     const key = emp.key!;
     const index = this.Employees.indexOf(emp);
     return this.db.database
@@ -184,7 +188,7 @@ export class EmployeAccountService {
             .remove(childKey)
             .then(() => {
               this.db
-                .list('company/' + this.companyId + '/employee')
+                .list('company/' + companyId + '/employee')
                 .remove(key)
                 .then(() => {
                   this.Employees.splice(index, 1);

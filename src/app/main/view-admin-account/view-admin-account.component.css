@@ -1,108 +1,84 @@
-h1,
-h1 + p {
-  margin: 30px 15px 0;
-  font-weight: 300;
-}
-h1 + p a {
-  color: #333;
-}
-h1 + p a:hover {
-  text-decoration: none;
-}
-h2 {
-  margin: 60px 15px 0;
-  padding: 0;
-  font-weight: 300;
-}
-h2 span {
-  margin-left: 1em;
-  color: #aaa;
-  font-size: 85%;
-}
-.column {
-  margin: 15px 15px 0;
-  padding: 0;
-}
-.column:last-child {
-  padding-bottom: 60px;
-}
-.column::after {
-  content: "";
-  clear: both;
-  display: block;
-}
-.column div {
-  position: relative;
-  float: left;
-  width: 300px;
-  height: 200px;
-  margin: 0 0 0 25px;
-  padding: 0;
-}
-.column div:first-child {
-  margin-left: 0;
-}
-.column div span {
-  position: absolute;
-  bottom: -20px;
-  left: 0;
-  z-index: -1;
-  display: block;
-  width: 300px;
-  margin: 0;
-  padding: 0;
-  color: #444;
-  font-size: 18px;
-  text-decoration: none;
+.card {
+  display: grid;
+  grid-template-columns: 300px;
+  grid-template-rows: 210px 100px 80px;
+  grid-template-areas: "image" "text" "stats";
+
+  border-radius: 18px;
+  background: white;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.9);
+  font-family: roboto;
   text-align: center;
-  -webkit-transition: 0.3s ease-in-out;
-  transition: 0.3s ease-in-out;
-  opacity: 0;
 }
-figure {
+
+.image {
   width: 300px;
-  height: 200px;
-  margin: 0;
-  padding: 0;
-  background: #fff;
-  overflow: hidden;
-}
-figure:hover + span {
-  bottom: -36px;
-  opacity: 1;
+  height: 210px;
 }
 
-/* Zoom In #1 */
-.hover01 figure img {
-  -webkit-transform: scale(1);
-  transform: scale(1);
-  -webkit-transition: 0.3s ease-in-out;
-  transition: 0.3s ease-in-out;
+.card-image {
+  grid-area: image;
 }
-.hover01 figure:hover img {
-  -webkit-transform: scale(1.3);
-  transform: scale(1.3);
+.card-text {
+  grid-area: text;
+}
+.card-stats {
+  grid-area: stats;
 }
 
-.title {
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.85);
-  line-height: 24px;
-  display: block;
-  margin-bottom: 16px;
-}
-.item-wrap {
-  font-size: 14px;
-  line-height: 22px;
-  margin-bottom: 7px;
-  color: rgba(0, 0, 0, 0.65);
+.card-image {
+  grid-area: image;
+  /* background: url("https://1.bp.blogspot.com/-5y2RzgeqOyA/XqxrnvVJgBI/AAAAAAAAHCQ/ugDNzMJREbkNhkMfJkdp0G5PfXc8UvcOACLcBGAsYHQ/s1600/Habesha%2BBus%2BEthiopia.jpg"); */
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  background-size: cover;
 }
 
-.label {
-  margin-right: 8px;
-  display: inline-block;
-  color: rgba(0, 0, 0, 0.85);
+.card-text {
+  grid-area: text;
+  margin: 25px;
 }
-/* .delete-icon {
-  text-align: left;
-} */
+.card-text .date {
+  color: #001529;
+  font-size: 13px;
+}
+.card-text p {
+  color: grey;
+  font-size: 15px;
+  font-weight: 300;
+}
+.card-text h2 {
+  margin-top: 0px;
+  font-size: 28px;
+}
+
+.card-stats {
+  grid-area: stats;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  background: #001529;
+}
+
+.card-stats .stat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  color: white;
+  padding: 10px;
+}
+
+.card:hover {
+  transform: scale(1.15);
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.6);
+}
+.card {
+  transition: 0.5s ease;
+  cursor: pointer;
+  margin: 30px;
+}

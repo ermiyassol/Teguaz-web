@@ -215,7 +215,8 @@ export class TripOperationComponent implements OnInit {
           this.returnStartingPlace,
           this.selectedDriver,
           returnForm.busNo,
-          this.companyId
+          this.companyId,
+          []
         );
         this.tripService.addTrip(newReturnTrip, returnForm.date);
       }
@@ -233,7 +234,8 @@ export class TripOperationComponent implements OnInit {
         this.startingPlace,
         this.selectedDriver,
         this.Form.value.busNo,
-        this.companyId
+        this.companyId,
+        []
       );
       // console.log(newTrip);
       this.tripService.addTrip(newTrip, this.Form.value.date).then((_) => {
@@ -415,6 +417,7 @@ export class TripOperationComponent implements OnInit {
     const date = this.Form.value.date;
     if (date != '' && date != null) {
       const localDateString = new Date(date).toLocaleDateString();
+      console.log(localDateString);
       this.tripService.setBuses(localDateString);
     }
   }

@@ -29,9 +29,11 @@
     [(ngModel)]="switchValue"
     (ngModelChange)="switchChange()"
   ></nz-switch>
-  Amharic Language
+  Change Language
 </span>
-<h3 [ngStyle]="{ margin: '16px 0' }">Large Size</h3>
+<hr />
+
+<h3 class="header">Scheduled Trips List</h3>
 <ul nz-list [nzDataSource]="trips" nzBordered nzSize="large">
   <!-- <nz-list-header>Header</nz-list-header> -->
   <li
@@ -40,12 +42,22 @@
     nzNoFlex
     (click)="viewDetail(i)"
   >
+    <div class="progress-div">
+      <span
+        >{{ trip.availableSeats ? trip.availableSeats + ' Seats Are Available' :
+        'No Seats Are Available All Tickets Were Sold!!' }}</span
+      >
+      <progress
+        [max]="trip.totalSeatNo"
+        [value]="trip.totalSeatNo - trip.availableSeats"
+      ></progress>
+    </div>
     <nz-list-item-meta-title>
-      <a href="https://ng.ant.design">{{trip.date[languageIndex]}}</a>
+      <a>{{trip.date[languageIndex]}}</a>
     </nz-list-item-meta-title>
     <ul nz-list-item-actions>
       <nz-list-item-action>
-        <a>{{ trip.bussNo}}</a>
+        <a>{{ trip.busNo}}</a>
       </nz-list-item-action>
       <nz-list-item-action>
         <a>{{ trip.driver}}</a>

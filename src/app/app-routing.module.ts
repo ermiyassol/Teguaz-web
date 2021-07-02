@@ -1,3 +1,5 @@
+import { ReportComponent } from './main/report/report.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { TripDetailComponent } from './main/trip-detail/trip-detail.component';
 import { TripListComponent } from './main/trip-list/trip-list.component';
 import { TripOperationComponent } from './main/trip-operation/trip-operation.component';
@@ -17,6 +19,7 @@ import { PlaceCrudComponent } from './main/place-crud/place-crud.component';
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
+  { path: 'reset_password', component: ResetPasswordComponent },
   {
     path: 'main',
     component: MainComponent,
@@ -35,6 +38,7 @@ const routes: Routes = [
       { path: 'trip/planning', component: TripOperationComponent },
       { path: 'trip/list', component: TripListComponent },
       { path: ':id/trip/detail', component: TripDetailComponent },
+      { path: 'report', component: ReportComponent}
     ],
   },
   // { path: '**', component: PageNotFoundComponent },

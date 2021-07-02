@@ -46,7 +46,7 @@ export class CreateAdminComponent implements OnInit {
     this.previewImage = file.url || file.preview;
     this.previewVisible = true;
     console.log(file);
-  };
+  }
 
   onInput(e: Event): void {
     const value = (e.target as HTMLInputElement).value;
@@ -127,7 +127,9 @@ export class CreateAdminComponent implements OnInit {
             .then((res: string) => {
               this.onEditAdmin.companyName = this.form.value.companyName;
               this.onEditAdmin.username = this.form.value.username;
-              this.onEditAdmin.website = this.form.value.website;
+              this.onEditAdmin.website = this.form.value.website
+                ? this.form.value.website
+                : ' - ';
               this.onEditAdmin.headOffice = this.form.value.headOffice;
               this.onEditAdmin.phoneNumber = this.form.value.phoneNumber;
               this.onEditAdmin.logoUrl = res;
@@ -215,7 +217,7 @@ export class CreateAdminComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = this.route.snapshot.params['id'];
+    const id = this.route.snapshot.params.id;
     if (id) {
       if (!this.adminService.checkAdmin() && !this.adminService.getAdmin(id)) {
         this.message.create('error', 'Invalid Url');
@@ -240,7 +242,7 @@ export class CreateAdminComponent implements OnInit {
           website: [this.onEditAdmin.website, [Validators.required]],
           headOffice: [this.onEditAdmin.headOffice, [Validators.required]],
           phoneNumber: [
-            null,
+            this.onEditAdmin.phoneNumber,
             [
               Validators.required,
               Validators.minLength(10),
@@ -258,8 +260,8 @@ export class CreateAdminComponent implements OnInit {
         username: [null, [Validators.required]],
         password: [null, [Validators.required, Validators.minLength(6)]],
         email: [null, [Validators.required, Validators.email]],
-        website: [' - ', [Validators.required]],
-        headOffice: [null, [Validators.required]],
+        website: [null],
+        headOffice: ['', [Validators.required]],
         phoneNumber: [null, [Validators.required, Validators.maxLength(10)]],
         // url: [null, [Validators.required]],
       });

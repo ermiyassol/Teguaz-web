@@ -1,10 +1,16 @@
 {
   "hosting": {
-    "public": "./dist/Teguaz-web",
+    "public": "dist/Teguaz-web",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   }
 }

@@ -9,12 +9,10 @@ import { Subject } from 'rxjs';
 })
 export class PlaceCrudService {
   Places: PlaceModel[] = [];
-  companyId: string;
+
   placeList = new Subject<PlaceModel[]>();
 
-  constructor(private db: AngularFireDatabase, private memory: MemoryService) {
-    this.companyId = this.memory.getCompanyId();
-  }
+  constructor(private db: AngularFireDatabase, private memory: MemoryService) {}
 
   getPlace(id: number) {
     return this.Places[id];
@@ -29,10 +27,11 @@ export class PlaceCrudService {
   }
 
   deletePlace(place: PlaceModel) {
+    const companyId = this.memory.getCompanyId();
     const key = place.key!;
     const index = this.Places.indexOf(place);
     return this.db
-      .list('company/' + this.companyId + '/place')
+      .list('company/' + companyId + '/place')
       .remove(key)
       .then(() => {
         this.Places.splice(index, 1);
@@ -41,7 +40,8 @@ export class PlaceCrudService {
   }
 
   addPlace(placeDesc: PlaceModel) {
-    return this.db.list('company/' + this.companyId + '/place').push({
+    const companyId = this.memory.getCompanyId();
+    return this.db.list('company/' + companyId + '/place').push({
       destination: placeDesc.destination,
       price: placeDesc.price,
       discount: { percentage: placeDesc.discount, reason: 'none' },
@@ -49,8 +49,10 @@ export class PlaceCrudService {
   }
 
   setPlaces() {
-    const ref = this.db.database.ref('company/' + this.companyId + '/place');
-    ref.once('value', (snapshot) => {
+    const companyId = this.memory.getCompanyId();
+    // this.Places = [];
+    const ref = this.db.database.ref('company/' + companyId + '/place');
+    ref.on('value', (snapshot) => {
       this.Places = [];
       for (const key in snapshot.val()) {
         if (snapshot.val().hasOwnProperty(key)) {
@@ -62,43 +64,40 @@ export class PlaceCrudService {
       }
       this.placeList.next(this.Places);
     });
-    this.childChanged();
-    this.childAdded();
+    // this.childChanged();
+    // this.childAdded();
   }
 
   // this one is used for every company sub property changes trip, name, passengers of trip . . . . . . etc
-  childChanged() {
-    const ref = this.db.database
-      .ref()
-      .child('company/' + this.companyId + '/place');
-    ref.on('child_changed', (snapshot) => {
-      this.Places.forEach((cur, index) => {
-        if (cur.key === snapshot.key) {
-          this.Places[index] = snapshot.val();
-          this.Places[index].key = snapshot.key;
-        }
-      });
-      this.placeList.next(this.Places);
-    });
-  }
+  // childChanged() {
+  //   const companyId = this.memory.getCompanyId();
+  //   const ref = this.db.database.ref().child('company/' + companyId + '/place');
+  //   return ref.on('child_changed', (snapshot) => {
+  //     this.Places.forEach((cur, index) => {
+  //       if (cur.key === snapshot.key) {
+  //         this.Places[index] = snapshot.val();
+  //         this.Places[index].key = snapshot.key;
+  //       }
+  //     });
+  //     this.placeList.next(this.Places);
+  //   });
+  // }
 
-  childAdded() {
-    const ref = this.db.database
-      .ref()
-      .child('company/' + this.companyId + '/place');
-    ref.on('child_added', (snapshot) => {
-      let temp: PlaceModel;
-      temp = snapshot.val();
-      temp.key = snapshot.key!;
-      this.Places.push(temp);
-      this.placeList.next(this.Places);
-    });
-  }
+  // childAdded() {
+  //   const companyId = this.memory.getCompanyId();
+  //   const ref = this.db.database.ref().child('company/' + companyId + '/place');
+  //   ref.on('child_added', (snapshot) => {
+  //     let temp: PlaceModel;
+  //     temp = snapshot.val();
+  //     temp.key = snapshot.key!;
+  //     this.Places.push(temp);
+  //     this.placeList.next(this.Places);
+  //   });
+  // }
 
   updatePlace(bus: PlaceModel, key: string) {
+    const companyId = this.memory.getCompanyId();
     bus.key = null!;
-    return this.db
-      .list('company/' + this.companyId + '/place')
-      .update(key, bus);
+    return this.db.list('company/' + companyId + '/place').update(key, bus);
   }
 }

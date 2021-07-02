@@ -1,3 +1,4 @@
+import { PassengerModel } from './passenger.model';
 export class TripModel {
   constructor(
     public date: string,
@@ -8,7 +9,7 @@ export class TripModel {
     public driver: string,
     public busNo: string,
     public companyId: string,
-    public key?: string,
-    public passengers?: []
+    public passengers: PassengerModel[],
+    public key?: string
   ) {}
 }

@@ -1,5 +1,8 @@
-<nz-alert [nzType]="'info'" [nzMessage]="'Create Admin Form'"> </nz-alert>
-<br />
+<nz-alert
+  [nzType]="'info'"
+  [nzMessage]="'Create Account For Company System Admin'"
+>
+</nz-alert>
 <br />
 <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
 <form
@@ -23,15 +26,22 @@
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
-  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
-    <nz-form-control nzErrorTip="Please input your Username!">
-      <nz-input-group nzPrefixIcon="user">
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }" *ngIf="!editMode">
+    <nz-form-control nzErrorTip="Please input valid Email Address!">
+      <nz-input-group nzPrefixIcon="mail">
         <input
-          type="text"
+          type="email"
           nz-input
-          formControlName="username"
-          placeholder="Username"
+          formControlName="email"
+          placeholder="Company Email Address"
+          (input)="onInput($event)"
+          [nzAutocomplete]="auto"
         />
+        <nz-autocomplete #auto>
+          <nz-auto-option *ngFor="let option of options" [nzValue]="option"
+            >{{ option }}</nz-auto-option
+          >
+        </nz-autocomplete>
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
@@ -49,25 +59,20 @@
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
-  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }" *ngIf="!editMode">
-    <nz-form-control nzErrorTip="Please input valid Email Address!">
-      <nz-input-group nzPrefixIcon="mail">
+
+  <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+    <nz-form-control nzErrorTip="Please input your Username!">
+      <nz-input-group nzPrefixIcon="user">
         <input
-          type="email"
+          type="text"
           nz-input
-          formControlName="email"
-          placeholder="Company Email Address"
-          (input)="onInput($event)"
-          [nzAutocomplete]="auto"
+          formControlName="username"
+          placeholder="Username"
         />
-        <nz-autocomplete #auto>
-          <nz-auto-option *ngFor="let option of options" [nzValue]="option">{{
-            option
-          }}</nz-auto-option>
-        </nz-autocomplete>
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
+
   <nz-form-item nz-col nzSpan="24" [nzMd]="{ span: 12 }">
     <nz-form-control nzErrorTip="Please input Company website url!">
       <nz-input-group nzPrefixIcon="right">
@@ -123,7 +128,7 @@
     >
       <div>
         <i nz-icon nzType="plus"></i>
-        <div style="margin-top: 8px">Upload</div>
+        <div style="margin-top: 8px;">Upload</div>
       </div>
     </nz-upload>
     <nz-modal

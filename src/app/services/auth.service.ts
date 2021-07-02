@@ -1,3 +1,4 @@
+import { MemoryService } from './memory.service';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
@@ -24,7 +25,8 @@ export class Auth {
   constructor(
     private http: HttpClient,
     private route: Router,
-    private db: AngularFireDatabase
+    private db: AngularFireDatabase,
+    private memory: MemoryService
   ) {}
 
   login(account: { email: string; password: string }) {
@@ -41,7 +43,6 @@ export class Auth {
       .pipe(
         catchError(this.handleError),
         tap((res) => {
-          console.log(res);
           this.handleAuthentication(
             res.email,
             res.localId,
@@ -108,7 +109,6 @@ export class Auth {
     token: string,
     expiresIn: number
   ) {
-    console.log(id);
     this.db.database
       .ref('users')
       .orderByChild('uid')
@@ -117,16 +117,12 @@ export class Auth {
         // snapshot.val();
         console.log(snapshot.val());
         for (const key in snapshot.val()) {
-          console.log(snapshot.val()[key]['cid']);
+          // console.log(snapshot.val()[key].cid);
           const cid =
-            snapshot.val()[key]['cid'] != null
-              ? snapshot.val()[key]['cid']
-              : '';
+            snapshot.val()[key].cid != null ? snapshot.val()[key].cid : '';
           const eid =
-            snapshot.val()[key]['eid'] != null
-              ? snapshot.val()[key]['eid']
-              : '';
-          const role = snapshot.val()[key]['role'];
+            snapshot.val()[key].eid != null ? snapshot.val()[key].eid : '';
+          const role = snapshot.val()[key].role;
           const expirationDate = new Date(
             new Date().getTime() + expiresIn * 1000
           );
@@ -140,8 +136,9 @@ export class Auth {
             token,
             expirationDate
           );
-          console.log(user);
+          // console.log(user);
           localStorage.setItem('userData', JSON.stringify(user));
+          this.memory.setUserData();
           this.autoLogout(expiresIn * 1000);
           this.user.next(user);
         }
@@ -151,7 +148,6 @@ export class Auth {
 
   private handleError(error: HttpErrorResponse) {
     {
-      console.log(error);
       let errorMessage = 'unknown error occurred!!';
       if (error.error) {
         switch (error.error.error.message) {
