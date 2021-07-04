@@ -16,6 +16,11 @@ interface check {
   disabled: boolean;
 }
 
+interface Notification {
+  message: string;
+  busNo: string;
+}
+
 @Component({
   selector: 'app-trip-operation',
   templateUrl: './trip-operation.component.html',
@@ -37,6 +42,7 @@ export class TripOperationComponent implements OnInit {
   selectedDriver = '';
   startingPlace: string[] = [];
   returnStartingPlace: string[] = [];
+  notificationMessages: Notification[] = [];
 
   showDriversModal(): void {
     this.selectedDriver = '';
@@ -157,7 +163,20 @@ export class TripOperationComponent implements OnInit {
     if (this.startingPlace.length == 0) {
       this.message.create(
         'error',
-        `Please select atleast one starting place!!`
+        `Please select at least one starting place!!`
+      );
+      return [false, false];
+    }
+
+    const busIsAvailableForSelectedDate = this.busesList.filter(
+      (bus) => bus.busNo == this.Form.value.busNo
+    ).length;
+    if (busIsAvailableForSelectedDate < 1) {
+      this.message.create(
+        'error',
+        `Please select Bus Which Is Available On ${new Date(
+          this.Form.value.date
+        ).toLocaleDateString()}!!`
       );
       return [false, false];
     }
@@ -171,6 +190,39 @@ export class TripOperationComponent implements OnInit {
         }
       });
 
+      if (returnValues.startingCity != this.Form.value.destinationCity) {
+        this.returnForm.reset();
+        this.returningTrip = false;
+        this.Form.patchValue({ destinationCity: null });
+        this.message.create(
+          'error',
+          `First Trip Destination City & Returning Trip Starting City is Not The Same. Please Destination City!!`
+        );
+        return [false, false];
+      }
+
+      if (returnValues.destinationCity != this.Form.value.startingCity) {
+        this.returnForm.reset();
+        this.returningTrip = false;
+        this.Form.patchValue({ startingCity: null });
+        this.message.create(
+          'error',
+          `First Trip Starting City & Returning Trip Destination City is Not The Same. Please Destination City!!`
+        );
+        return [false, false];
+      }
+
+      if (returnValues.busNo != this.Form.value.busNo) {
+        this.returnForm.reset();
+        this.returningTrip = false;
+        this.Form.patchValue({ busNo: null });
+        this.message.create(
+          'error',
+          `the Bus No Must Be The Same For Both Trips. Please select Bus!!`
+        );
+        return [false, false];
+      }
+
       if (new Date(returnValues.date) <= new Date(this.Form.value.date)) {
         this.returnForm.patchValue({ date: null });
         this.message.create(
@@ -183,11 +235,40 @@ export class TripOperationComponent implements OnInit {
       if (this.returnStartingPlace.length == 0) {
         this.message.create(
           'error',
-          `Please select atleast one starting place for the return place!!`
+          `Please select at least one starting place for the return place!!`
         );
         return [false, false];
       }
+
+      const response = this.tripService.tripBetweenDateValidator(
+        this.Form.value.busNo,
+        this.Form.value.date,
+        this.returnForm.value.date
+      );
+      console.log('validation return');
+      console.log(response);
+      if (!response.isValidated) {
+        this.notification.warning('Unassigned Bus', response.message, {
+          nzDuration: 0,
+        });
+        this.returnForm.patchValue({ date: null });
+        return [false, false];
+      }
       return [true, true];
+    }
+    const Validation = this.tripService.onTripValidationforReturnTrip(
+      this.Form.value.busNo,
+      new Date(this.Form.value.date).toLocaleDateString(),
+      this.Form.value.startingCity,
+      this.Form.value.destinationCity
+    );
+
+    if (!Validation.isValidated) {
+      this.notification.info('Appointment Error', Validation.message, {
+        nzDuration: 0,
+      });
+      this.Form.patchValue({ date: null });
+      return [false, false];
     }
     return [true, false];
   }
@@ -200,6 +281,7 @@ export class TripOperationComponent implements OnInit {
         if (!this.returnDateValidator()) {
           return;
         }
+        console.log('Validation Passed');
         const returnForm = this.returnForm.getRawValue();
         const convertedDate = this.dateConverter(returnForm.date.toString()); // this is the final coverted date
         const unformatedTime = new Date(
@@ -352,20 +434,32 @@ export class TripOperationComponent implements OnInit {
     // if (!this.returnForm.value.date) {
     //   return;
     // }
+    // console.log('from componenet');
+    // console.log(this.Form.value.busNo);
+    // console.log(new Date(this.returnForm.value.date).toLocaleDateString());
+    // console.log(this.returnForm.value.startingCity);
+    // console.log(this.returnForm.value.destinationCity);
+    const Validation = this.tripService.onTripValidationforReturnTrip(
+      this.Form.value.busNo,
+      new Date(this.returnForm.value.date).toLocaleDateString(),
+      this.Form.value.destinationCity,
+      this.Form.value.startingCity
+    );
+    if (!Validation.isValidated) {
+      this.notification.info(
+        'Returning Trip Appointment Error',
+        Validation.message,
+        {
+          nzDuration: 0,
+        }
+      );
 
-    if (
-      !this.tripService.onTripValidationforReturnTrip(
-        this.Form.value.busNo,
-        new Date(this.returnForm.value.date).toLocaleDateString(),
-        'equal'
-      )
-    ) {
       isValidated = false;
       this.returnForm.patchValue({ date: null });
-      this.message.create(
-        'error',
-        `Selected return trip date is invalid\n Another trip appointed on selected date!!`
-      );
+      // this.message.create(
+      //   'error',
+      //   `Selected return trip date is invalid\n Another trip appointed on selected date!!`
+      // );
     }
     return isValidated;
   }
@@ -375,19 +469,24 @@ export class TripOperationComponent implements OnInit {
       this.Form.controls[i].markAsDirty();
       this.Form.controls[i].updateValueAndValidity();
     }
+
     if (this.Form.valid && this.returningTrip) {
-      if (
-        !this.tripService.onTripValidationforReturnTrip(
-          this.Form.value.busNo,
-          new Date(this.Form.value.date).toLocaleDateString(),
-          'comp'
-        )
-      ) {
+      const Validation = this.tripService.onTripValidationforReturnTrip(
+        this.Form.value.busNo,
+        new Date(this.Form.value.date).toLocaleDateString(),
+        this.Form.value.startingCity,
+        this.Form.value.destinationCity
+      );
+      if (!Validation.isValidated) {
+        this.notification.info('Appointment Error', Validation.message, {
+          nzDuration: 0,
+        });
+        this.Form.patchValue({ date: null });
         this.returningTrip = false;
-        this.message.create(
-          'error',
-          `Selected Bus has been registered for another Trip before / after one day!!`
-        );
+        // this.message.create(
+        //   'error',
+        //   `Selected Bus has been registered for another Trip before / after one day!!`
+        // );
         return;
       }
       let date = this.Form.value.date.toString();
@@ -431,6 +530,12 @@ export class TripOperationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.tripService.BusSelectionMessage.subscribe((response) => {
+      // this.notification.info('Unassigned Bus', response.message, { nzDuration: 0 });
+      // this.notification.info('Unassigned Bus', response.message);
+
+      this.notificationMessages.push(response);
+    });
     this.tripService.busList.subscribe((response) => {
       this.busesList = response;
       // response.forEach((cur) => {
@@ -559,5 +664,6 @@ export class TripOperationComponent implements OnInit {
     });
 
     this.tripService.setDestination();
+    this.notificationMessages = [];
   }
 }

@@ -10,6 +10,7 @@ export class TripModel {
     public busNo: string,
     public companyId: string,
     public passengers: PassengerModel[],
+    public status?: boolean[],
     public key?: string
   ) {}
 }

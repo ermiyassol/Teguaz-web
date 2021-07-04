@@ -31,6 +31,7 @@ export class TripService {
   tripsList = new Subject<TripModel[]>();
   city: string;
   type: string;
+  BusSelectionMessage = new Subject<{ message: string; busNo: string }>();
 
   constructor(
     private http: HttpClient,
@@ -135,35 +136,82 @@ export class TripService {
     });
   }
 
-  onTripValidationforReturnTrip(
+  tripBetweenDateValidator(
     busNo: string,
-    date: String,
-    type: string
-  ): Boolean {
+    gDate: string,
+    rDate: string
+  ): { isValidated: boolean; message: string } {
     let isValidated = true;
+    let message = '';
+    const onTrip = this.Buses.filter((bus) => bus.busNo == busNo).map(
+      (bus) => bus.onTrip
+    )[0];
+    const goingDate = new Date(gDate);
+    const returningDate = new Date(rDate);
+
+    onTrip.forEach((cur) => {
+      const tripDate = new Date(cur.date);
+      if (goingDate < tripDate && tripDate < returningDate) {
+        isValidated = false;
+        message = `Bus No. ${busNo} Have Another Trip On ${cur.date}. ThereFore you Must schedule the returning Date Before Pre Scheduled Trip Date!!`;
+      }
+    });
+    return { isValidated, message };
+  }
+
+  onTripValidationforReturnTrip(
+    // ! this method must be called from componenet when the switch clicked and when admin change returning trip date
+    busNo: string,
+    date: string, // ! always must be returning trip date
+    startingCity: string,
+    destinationCity: string
+  ): { isValidated: boolean; message: string } {
+    let isValidated = true;
+    let message = '';
+
     const onTrip = this.Buses.filter((bus) => bus.busNo == busNo).map(
       (bus) => bus.onTrip
     )[0];
     const fetchedDate = date.split('/');
     onTrip.forEach((cur) => {
       const dateArr = cur.date.split('/');
-
-      const result =
-        fetchedDate[0] == dateArr[0]
-          ? parseInt(dateArr[1]) - parseInt(fetchedDate[1])
-          : 30 - parseInt(dateArr[1]) + parseInt(fetchedDate[1]);
-      // console.log(dateArr[1] + ' - ' + fetchedDate[1] + ' = ' + result);
-      if (result < 2 && result > -2 && type == 'comp') {
+      const nextDateTripCondition =
+        new Date(
+          new Date().setDate(new Date(date).getDate() + 1)
+        ).toLocaleDateString() == new Date(cur.date).toLocaleDateString();
+      const previousDateTripCondition =
+        new Date(
+          new Date().setDate(new Date(date).getDate() - 1)
+        ).toLocaleDateString() == new Date(cur.date).toLocaleDateString();
+      const tripIndex = this.Trips.findIndex((trip) => trip.key == cur.tid);
+      const trip = this.fetchTripDetail(tripIndex);
+      if (date == cur.date) {
         isValidated = false;
-      }
-      if (
-        (cur.date == date && type == 'equal') ||
-        (result < 0 && type == 'equal')
-      ) {
-        isValidated = false;
+        message = `Bus No. ${busNo} Registered For Trip On ${this.Trips[tripIndex].date} From: ${this.Trips[tripIndex].startingCity} To: ${this.Trips[tripIndex].destinationCity} - - - The Bus Is Not Available On Selected Date! Please Select Another Date`;
+      } else if (nextDateTripCondition) {
+        // const tripIndex = this.Trips.findIndex((trip) => trip.key == cur.tid);
+        // const trip = this.fetchTripDetail(tripIndex);
+        isValidated = trip.startingCity == destinationCity ? true : false;
+        console.log(date);
+        console.log(trip.startingCity);
+        console.log(destinationCity);
+        console.log(isValidated);
+        message =
+          trip.startingCity == destinationCity
+            ? ''
+            : `Bus No. ${busNo} Registered For Trip On ${this.Trips[tripIndex].date} From: ${this.Trips[tripIndex].startingCity} To: ${this.Trips[tripIndex].destinationCity} - - - The Bus Is Available On Selected Date But It Will has Another Trip On The Next Date ThereFore The Bus Must Be used For Trip To ${this.Trips[tripIndex].startingCity} Only!`;
+      } else if (previousDateTripCondition) {
+        // const tripIndex = this.Trips.findIndex((trip) => trip.key == cur.tid);
+        // const trip = this.fetchTripDetail(tripIndex);
+        isValidated = trip.destinationCity == startingCity ? true : false;
+        message =
+          trip.destinationCity == startingCity
+            ? ''
+            : `Bus No. ${busNo} Registered For Trip On ${this.Trips[tripIndex].date} From: ${this.Trips[tripIndex].startingCity} To: ${this.Trips[tripIndex].destinationCity} - - - The Bus Is Available On Selected Date But It Had Another Trip On The Day Before The Selected Date ThereFore The Bus Must Be used For Trip From: ${this.Trips[tripIndex].destinationCity} Only!`;
+      } else {
       }
     });
-    return isValidated;
+    return { isValidated, message };
   }
 
   setBuses(date: string) {
@@ -178,15 +226,56 @@ export class TripService {
           temp.key = key;
           temp.onTrip = temp.onTrip ? temp.onTrip : [];
           // if (!temp.onTrip) { // ! do the date validation here
-          const onTripValidator = temp.onTrip.filter(
-            (cur) => cur.date == date
-            // const dateArr = date.split('/');
-            // const busDateArr = cur.date.split('/');
-            // const condition = date == cur.date ||
-            // if(dateArr[0] == busDateArr[0]) {
-            // todo work bus selection algorithem
-            // }
-          );
+          console.log('date');
+          const onTripValidator = temp.onTrip.filter((cur) => {
+            const tripDate = new Date(date);
+            const dateArr = date.split('/');
+            dateArr[1] = (parseInt(dateArr[1]) + 1).toString();
+            const tripNextDate = new Date(dateArr.join('/'));
+            dateArr[1] = (parseInt(dateArr[1]) - 2).toString();
+            const tripPreviousDate = new Date(dateArr.join('/'));
+            const busTripDate = new Date(cur.date);
+            // console.log(tripDate);
+            // console.log(tripNextDate);
+            // console.log(busTripDate);
+            // console.log(busTripDate > tripDate);
+            // console.log(busTripDate.toString() == tripNextDate.toString());
+            if (busTripDate.toString() == tripDate.toString()) {
+              console.log('if clause');
+              return cur;
+            } else if (
+              busTripDate > tripDate &&
+              busTripDate.toString() == tripNextDate.toString()
+            ) {
+              console.log('if else');
+              const tripIndex = this.Trips.findIndex(
+                (trip) => trip.key == cur.tid
+              );
+              const message = `Bus No. ${temp.busNo} Registered For Trip On ${this.Trips[tripIndex].date} From: ${this.Trips[tripIndex].startingCity} To: ${this.Trips[tripIndex].destinationCity} - - - The Bus Is Available On Selected Date But It Will has Another Trip On The Next Date ThereFore The Bus Must Be used For Trip To ${this.Trips[tripIndex].startingCity} Only!`;
+              this.BusSelectionMessage.next({
+                message,
+                busNo: temp.busNo,
+              });
+              return;
+            } else if (
+              busTripDate > tripDate &&
+              busTripDate.toString() == tripPreviousDate.toString()
+            ) {
+              console.log('if else');
+              const tripIndex = this.Trips.findIndex(
+                (trip) => trip.key == cur.tid
+              );
+              const message = `Bus No. ${temp.busNo} Registered For Trip On ${this.Trips[tripIndex].date} From: ${this.Trips[tripIndex].startingCity} To: ${this.Trips[tripIndex].destinationCity} - - - The Bus Is Available On Selected Date But It Had Another Trip On The Day Before The Selected Date ThereFore The Bus Must Be used For Trip From: ${this.Trips[tripIndex].destinationCity} Only!`;
+              this.BusSelectionMessage.next({
+                message,
+                busNo: temp.busNo,
+              });
+              return;
+            } else {
+              return;
+            }
+            // cur.date == date;
+          });
           if (onTripValidator.length == 0) {
             this.Buses.push(temp);
           }
@@ -259,6 +348,7 @@ export class TripService {
     const companyId = this.memory.getCompanyId();
     newTrip.passengers = [];
     newTrip.key = null!;
+    newTrip.status = [false, false];
     return this.db
       .list('trip')
       .push(newTrip)

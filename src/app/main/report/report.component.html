@@ -1,0 +1,114 @@
+<nz-page-header class="site-page-header">
+  <!--avatar-->
+  <nz-avatar
+    nz-page-header-avatar
+    nzSrc="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2X2D7kE-J3aSOmsz329xs8G6VViJyYo-hGw&usqp=CAU"
+  >
+  </nz-avatar>
+
+  <!--title-->
+  <nz-page-header-title>Audit Report</nz-page-header-title>
+
+  <!--subtitle-->
+  <nz-page-header-subtitle
+    ><i nz-icon nzType="caret-right" nzTheme="outline"></i
+    ><i nz-icon nzType="caret-right" nzTheme="outline"></i
+  ></nz-page-header-subtitle>
+
+  <!--tags-->
+  <nz-page-header-tags>
+    <nz-tag [nzColor]="'blue'">Running</nz-tag>
+  </nz-page-header-tags>
+
+  <!--extra-->
+  <nz-page-header-extra>
+    <button nz-button>Per Trip</button>
+    <button nz-button>Daily</button>
+    <button nz-button nzType="primary">Weekly</button>
+    <button
+      nz-button
+      nzNoAnimation
+      nz-dropdown
+      [nzDropdownMenu]="menu"
+      style="border: none; padding: 0;"
+    >
+      <i
+        nz-icon
+        nzType="ellipsis"
+        nzTheme="outline"
+        style="font-size: 20px; vertical-align: top;"
+      ></i>
+    </button>
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu>
+        <li nz-menu-item>
+          <i nz-icon nzType="search" nzTheme="outline"></i>
+          <span>Search</span>
+        </li>
+        <li nz-menu-item>
+          <i nz-icon nzType="sort-ascending" nzTheme="outline"></i>
+          <span>Sort</span>
+        </li>
+      </ul>
+    </nz-dropdown-menu>
+  </nz-page-header-extra>
+
+  <!--content-->
+  <nz-page-header-content>
+    <div nz-row>
+      <div class="content" nz-col nzSpan="24" [nzMd]="{ span: 16 }">
+        <p nz-paragraph>
+          Ant Design interprets the color system into two levels: a system-level
+          color system and a product-level color system.
+        </p>
+        <nz-descriptions nzBordered nzSize="small">
+          <nz-descriptions-item nzTitle="Report Detail" [nzSpan]="6"
+            >From date this - to this</nz-descriptions-item
+          >
+          <nz-descriptions-item nzTitle="Payment Type"
+            >Application</nz-descriptions-item
+          >
+          <nz-descriptions-item nzTitle="No Of Passenger"
+            >13</nz-descriptions-item
+          >
+          <nz-descriptions-item nzTitle="Amount"
+            >3000 Birr</nz-descriptions-item
+          >
+
+          <!--  -->
+          <nz-descriptions-item nzTitle="">Branch</nz-descriptions-item>
+          <nz-descriptions-item nzTitle="">33</nz-descriptions-item>
+          <nz-descriptions-item nzTitle="">3000 Birr</nz-descriptions-item>
+          <!--  -->
+          <nz-descriptions-item nzTitle="">Bank</nz-descriptions-item>
+          <nz-descriptions-item nzTitle="">22</nz-descriptions-item>
+          <nz-descriptions-item nzTitle="">3000 Birr</nz-descriptions-item>
+        </nz-descriptions>
+        <div class="content-link">
+          <a>
+            <img
+              src="https://gw.alipayobjects.com/zos/rmsportal/MjEImQtenlyueSmVEfUD.svg"
+              alt="start"
+            />Audit Branch Office
+          </a>
+          <a>
+            <img
+              src="https://gw.alipayobjects.com/zos/rmsportal/NbuDUAuBlIApFuDvWiND.svg"
+              alt="info"
+            />Calculate Share
+          </a>
+          <a>
+            <img
+              src="https://gw.alipayobjects.com/zos/rmsportal/ohOEPSYdDTNnyMbGuyLb.svg"
+              alt="doc"
+            />View Trip Detail
+          </a>
+          <label nz-checkbox [(ngModel)]="checked">Checkbox</label>
+        </div>
+      </div>
+      <div class="graph" nz-col nzSpan="24" [nzMd]="{ span: 8 }">
+        <div id="c1"></div>
+      </div>
+    </div>
+  </nz-page-header-content>
+</nz-page-header>

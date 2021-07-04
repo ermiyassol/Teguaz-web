@@ -1,3 +1,5 @@
+import { subscribeOn } from 'rxjs/operators';
+import { InitService } from './../services/init.service';
 import { Auth } from './../services/auth.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
@@ -15,7 +17,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   options: string[] = [];
   subscription: Subscription;
-  isLoading = false;
+  isLoading = true;
   passwordVisible = false;
 
   onInput(e: Event): void {
@@ -54,11 +56,19 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
+  private appInitialization() {
+    this.isLoading = true;
+    this.appInitService.tripsInitialization().then(() => {
+      this.isLoading = false;
+    });
+  }
+
   constructor(
     private fb: FormBuilder,
     private auth: Auth,
     private message: NzMessageService,
-    private routes: Router
+    private routes: Router,
+    private appInitService: InitService
   ) {}
 
   ngOnInit(): void {
@@ -74,6 +84,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.routes.navigate(['main']);
       }
     });
+
+    this.appInitialization();
   }
 
   showModal(): void {
