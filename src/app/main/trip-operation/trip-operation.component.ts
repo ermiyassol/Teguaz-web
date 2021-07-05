@@ -298,7 +298,8 @@ export class TripOperationComponent implements OnInit {
           this.selectedDriver,
           returnForm.busNo,
           this.companyId,
-          []
+          [],
+          [false, false]
         );
         this.tripService.addTrip(newReturnTrip, returnForm.date);
       }
@@ -317,7 +318,8 @@ export class TripOperationComponent implements OnInit {
         this.selectedDriver,
         this.Form.value.busNo,
         this.companyId,
-        []
+        [],
+        [false, false]
       );
       // console.log(newTrip);
       this.tripService.addTrip(newTrip, this.Form.value.date).then((_) => {

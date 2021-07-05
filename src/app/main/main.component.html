@@ -142,6 +142,7 @@
         nz-menu-item
         routerLink="report"
         routerLinkActive="ant-menu-item-selected"
+        *ngIf="role == 'Admin' || role == 'Super Admin'"
       >
         <i nz-icon nzType="file-text"></i>
         <span>Report</span>
