@@ -36,6 +36,6 @@ nz-page-header-content div {
 
 .graph {
   width: 25%;
-  float: left;
+  /* float: left; */
   margin-top: 20px;
 }

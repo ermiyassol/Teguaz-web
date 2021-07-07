@@ -7,6 +7,10 @@ import { Injectable } from '@angular/core';
 export class MemoryService {
   userData: User = JSON.parse(localStorage.getItem('userData')!);
 
+  getUserData() {
+    return JSON.parse(localStorage.getItem('userData')!);
+  }
+
   getCompanyId() {
     return this.userData.cid;
   }
@@ -16,7 +20,11 @@ export class MemoryService {
   }
 
   getRole() {
-    return this.userData.role;
+    if (this.userData) {
+      return this.userData.role;
+    } else {
+      return '';
+    }
   }
 
   all() {
@@ -26,6 +34,10 @@ export class MemoryService {
   setUserData() {
     this.userData = JSON.parse(localStorage.getItem('userData')!);
   }
+
+  // deleteUserData() {
+  //   this.userData = null;
+  // }
 
   constructor() {}
 }

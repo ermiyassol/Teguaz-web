@@ -1,3 +1,4 @@
+import { MemoryService } from './../../services/memory.service';
 import { ImageUploadingService } from './../../services/image-uploading.service';
 import { AdminModel } from './../../models/Admin.model';
 import { AdminAccountService } from './../../services/admin-account.service';
@@ -213,10 +214,15 @@ export class CreateAdminComponent implements OnInit {
     private message: NzMessageService,
     private routes: Router,
     private route: ActivatedRoute,
-    private ips: ImageUploadingService
+    private ips: ImageUploadingService,
+    private memory: MemoryService
   ) {}
 
   ngOnInit(): void {
+    if (this.memory.getRole() != 'Super Admin') {
+      this.routes.navigate(['../page-not-found']);
+    }
+
     const id = this.route.snapshot.params.id;
     if (id) {
       if (!this.adminService.checkAdmin() && !this.adminService.getAdmin(id)) {
@@ -247,7 +253,6 @@ export class CreateAdminComponent implements OnInit {
               Validators.required,
               Validators.minLength(10),
               Validators.maxLength(10),
-              Validators.pattern(/^-?(0|[1-9]\d*)?$/),
             ],
           ],
           // url: [null, [Validators.required]],

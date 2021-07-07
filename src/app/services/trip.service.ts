@@ -367,6 +367,31 @@ export class TripService {
       });
   }
 
+  validateSeatReservation() {
+    setInterval(() => {
+      const currentHour = parseInt(
+        new Date().toLocaleTimeString().split(':')[0]
+      );
+      this.Trips.forEach((trip) =>
+        trip.passengers.forEach((passenger) => {
+          if (passenger.status != 'sold') {
+            const timeChange =
+              currentHour - parseInt(passenger.time.split(':')[0]);
+
+            if (timeChange > 1) {
+              // todo perform delete operation
+              // console.log(passenger);
+
+              this.db
+                .list('trip/' + trip.key + '/passengers')
+                .remove(passenger.key);
+            }
+          }
+        })
+      );
+    }, 30000);
+  }
+
   // companyId
   setTrips() {
     const companyId = this.memory.getCompanyId();

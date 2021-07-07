@@ -1,8 +1,10 @@
+import { MemoryService } from './../../services/memory.service';
 import { EmployeeModel } from './../../models/Employe.model';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { EmployeAccountService } from './../../services/employe-account.service';
+import { Router } from '@angular/router';
 // import { Router, ActivatedRoute } from '@angular/router';
 
 // interface EmployeeModel {
@@ -127,10 +129,15 @@ export class EmployeeAccountComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private employeeService: EmployeAccountService,
-    private message: NzMessageService
+    private message: NzMessageService,
+    private routes: Router,
+    private memory: MemoryService
   ) {}
 
   ngOnInit(): void {
+    if (this.memory.getRole() != 'Admin') {
+      this.routes.navigate(['../page-not-found']);
+    }
     this.form = this.fb.group({
       fullName: [null, [Validators.required]],
       role: [null, [Validators.required]],

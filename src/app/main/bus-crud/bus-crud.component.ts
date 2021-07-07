@@ -1,3 +1,5 @@
+import { MemoryService } from './../../services/memory.service';
+import { Routes, Router } from '@angular/router';
 import { BusModel } from './../../models/bus.model';
 import { EmployeeModel } from './../../models/Employe.model';
 // import { EmployeeModel } from './../../models/Employe.model';
@@ -174,10 +176,15 @@ export class BusCrudComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private busService: BusCrudService,
-    private message: NzMessageService // private etdate: ethiopic-Date,
+    private message: NzMessageService,
+    private routes: Router,
+    private memory: MemoryService // private etdate: ethiopic-Date,
   ) {}
 
   ngOnInit(): void {
+    if (this.memory.getRole() != 'Admin') {
+      this.routes.navigate(['../page-not-found']);
+    }
     this.form = this.fb.group({
       busNo: [null, [Validators.required]],
       driver1: [null, [Validators.required, this.driversValidator.bind(this)]],

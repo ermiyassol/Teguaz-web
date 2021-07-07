@@ -58,7 +58,7 @@
     *ngFor="let audit of auditReport; let auditIndex = index"
   >
     <div nz-row>
-      <div class="content" nz-col nzSpan="24" [nzMd]="{ span: 16 }">
+      <div class="content" nz-col nzSpan="24" [nzMd]="{ span: 20 }">
         <p nz-paragraph>
           Audit Report For Single Trip!!
         </p>
@@ -195,7 +195,7 @@
         <tr *ngFor="let data of basicTable2.data">
           <td>{{ data.name }}</td>
           <td>{{ data.phoneNo }}</td>
-          <td>{{ data.bookingMethod }} Birr</td>
+          <td>By {{ data.bookingMethod }}</td>
         </tr>
       </tbody>
     </nz-table>

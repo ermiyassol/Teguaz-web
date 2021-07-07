@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AdminAccountService } from 'src/app/services/admin-account.service';
 import { Subscription } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MemoryService } from 'src/app/services/memory.service';
 
 @Component({
   selector: 'app-view-admin-account',
@@ -21,13 +22,6 @@ export class ViewAdminAccountComponent implements OnInit, OnDestroy {
     // console.log(i);
   }
 
-  constructor(
-    private adminService: AdminAccountService,
-    private routes: Router,
-    private route: ActivatedRoute,
-    private tripService: TripService
-  ) {}
-
   private countTrips() {
     this.admins.forEach((company) => {
       const num = this.tripService.countUpcomingTrips(company.key!);
@@ -43,11 +37,23 @@ export class ViewAdminAccountComponent implements OnInit, OnDestroy {
       ).toLocaleDateString();
     });
   }
+  constructor(
+    private adminService: AdminAccountService,
+    private routes: Router,
+    private route: ActivatedRoute,
+    private tripService: TripService,
+    private memory: MemoryService
+  ) {}
 
   ngOnInit(): void {
+    if (this.memory.getRole() != 'Super Admin') {
+      this.routes.navigate(['../page-not-found']);
+    }
     this.admins = this.adminService.retriveAdmins();
     this.subscription = this.adminService.adminList.subscribe((response) => {
+      console.log(this.admins);
       this.admins = response;
+      console.log(this.admins);
       this.countTrips();
       this.dateConverter();
       this.isLoading = false;

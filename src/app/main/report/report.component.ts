@@ -7,6 +7,7 @@ import {
 } from './../../services/audit.service';
 import { Component, OnInit } from '@angular/core';
 import { Chart } from '@antv/g2';
+import { Router } from '@angular/router';
 
 interface Person {
   key: string;
@@ -35,7 +36,7 @@ export class ReportComponent implements OnInit {
   isShareKeyValue = '';
   shareList: shareInterface[] = [];
   tripList: tripInterface[] = [];
-  myChart: Chart;
+  // myChart: Chart;
   role: string;
 
   drawGraph(id: string, tripReport: reportInterface[]) {
@@ -43,7 +44,9 @@ export class ReportComponent implements OnInit {
       tripReport[0].passengerNo +
       tripReport[1].passengerNo +
       tripReport[2].passengerNo;
+    console.log(totalTicket);
     if (totalTicket) {
+      console.log('object callsed');
       const data = [
         {
           item: tripReport[0].label,
@@ -61,35 +64,36 @@ export class ReportComponent implements OnInit {
           percent: tripReport[2].passengerNo / totalTicket,
         },
       ];
-      if (this.myChart) {
-        this.myChart.destroy();
-      }
-
-      this.myChart = new Chart({
+      // if (chart) {
+      //   console.log(chart);
+      //   // chart.destroy();
+      // } else {
+      // }
+      const chart = new Chart({
         container: id,
         autoFit: true,
         height: 200,
       });
 
-      this.myChart.data(data);
-      this.myChart.scale('percent', {
+      chart.data(data);
+      chart.scale('percent', {
         formatter: (val) => {
           val = val * 100 + '%';
           return val;
         },
       });
-      this.myChart.coordinate('theta', {
+      chart.coordinate('theta', {
         radius: 0.75,
         innerRadius: 0.6,
       });
-      this.myChart.tooltip({
+      chart.tooltip({
         showTitle: false,
         showMarkers: false,
         itemTpl:
           '<li class="g2-tooltip-list-item"><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>',
       });
 
-      this.myChart
+      chart
         .annotation()
         .text({
           position: ['50%', '50%'],
@@ -123,7 +127,7 @@ export class ReportComponent implements OnInit {
           offsetY: 20,
           // offsetX: 20,
         });
-      this.myChart
+      chart
         .interval()
         .adjust('stack')
         .position('percent')
@@ -143,9 +147,9 @@ export class ReportComponent implements OnInit {
           };
         });
 
-      this.myChart.interaction('element-active');
+      chart.interaction('element-active');
 
-      this.myChart.render();
+      chart.render();
     }
   }
 
@@ -199,17 +203,29 @@ export class ReportComponent implements OnInit {
 
   constructor(
     private auditService: AuditService,
-    private memory: MemoryService
+    private memory: MemoryService,
+    private routes: Router // private memory: MemoryService
   ) {}
 
   ngOnInit(): void {
+    const role =
+      this.memory.getRole() == 'Admin' ||
+      this.memory.getRole() == 'Super Admin';
+    if (!role) {
+      this.routes.navigate(['../page-not-found']);
+    }
     this.role = this.memory.getRole();
+    // this.auditReport = [];
     this.auditService.auditReportList.subscribe((response) => {
-      this.auditReport = response;
+      response.forEach((aud) => {
+        this.auditReport = response;
+      });
 
-      setTimeout(() => {
-        response.forEach((res) => this.drawGraph(res.tripKey, res.tripReport));
-      }, 3000);
+      // setTimeout(() => {
+      //   this.auditReport.forEach((res) =>
+      //     this.drawGraph(res.tripKey, res.tripReport)
+      //   );
+      // }, 3000);
     });
 
     // service auditor method calling

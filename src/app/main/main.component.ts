@@ -43,18 +43,25 @@ export class MainComponent implements OnInit {
 
   ngOnInit(): void {
     this.role = this.memory.getRole();
+
     if (this.role == 'Admin') {
       this.busService.setBuses();
       this.employeService.setEmployees();
       this.TripService.setTrips();
+      this.TripService.validateSeatReservation();
       this.placeService.setPlaces();
       this.busService.setDrivers();
+      this.routes.navigate(['trip/list'], { relativeTo: this.route });
     } else if (this.role == 'Ticket Seller') {
       this.busService.setBuses();
       this.TripService.setTrips();
+      this.routes.navigate(['trip/list'], { relativeTo: this.route });
     } else if (this.role == 'Super Admin') {
       this.adminService.setAdmins();
+      this.routes.navigate(['view_Admin_Account'], { relativeTo: this.route });
+    } else if (this.role == 'Driver') {
     } else {
+      this.routes.navigate(['../page-not-found']);
     }
   }
 

@@ -261,7 +261,7 @@ export class AuditService {
           const bookingMethod =
             pass.bookingMethod == 'App' ? 'Application' : 'Branch';
           const temp: tripInterface = {
-            bookingMethod: 'Application',
+            bookingMethod,
             name: pass.fullName,
             phoneNo: pass.phoneNo.toString(),
           };

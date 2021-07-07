@@ -101,9 +101,9 @@ export class AdminAccountService {
   }
 
   setAdmins() {
-    this.Admins = [];
     const ref = this.db.database.ref('company');
     return ref.on('value', (snapshot) => {
+      this.Admins = [];
       for (const key in snapshot.val()) {
         if (snapshot.val().hasOwnProperty(key)) {
           let temp: AdminModel;

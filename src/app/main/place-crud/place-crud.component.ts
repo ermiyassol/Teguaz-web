@@ -1,9 +1,11 @@
+import { MemoryService } from './../../services/memory.service';
 import { PlaceCrudService } from './../../services/place.crud.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { PlaceModel } from 'src/app/models/place.,model';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-place-crud',
@@ -132,10 +134,15 @@ export class PlaceCrudComponent implements OnInit {
     private fb: FormBuilder,
     private placeService: PlaceCrudService,
     private message: NzMessageService,
-    private notification: NzNotificationService
+    private notification: NzNotificationService,
+    private routes: Router,
+    private memory: MemoryService
   ) {}
 
   ngOnInit(): void {
+    if (this.memory.getRole() != 'Admin') {
+      this.routes.navigate(['../page-not-found']);
+    }
     this.form = this.fb.group({
       destination: [null, [Validators.required]],
       price: [null, [Validators.required]],

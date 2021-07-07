@@ -38,10 +38,11 @@ const routes: Routes = [
       { path: 'trip/planning', component: TripOperationComponent },
       { path: 'trip/list', component: TripListComponent },
       { path: ':id/trip/detail', component: TripDetailComponent },
-      { path: 'report', component: ReportComponent}
+      { path: 'report', component: ReportComponent },
     ],
   },
-  // { path: '**', component: PageNotFoundComponent },
+  { path: '**', redirectTo: 'page_not_found' },
+  { path: 'page_not_found', component: PageNotFoundComponent },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
