@@ -1,3 +1,4 @@
+import { FilteredTripListComponent } from './home/trip-list/trip-list.component';
 import { AuthInterceptor } from './services/auth.interceptor.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -37,6 +38,11 @@ import { TripListComponent } from './main/trip-list/trip-list.component';
 import { TripDetailComponent } from './main/trip-detail/trip-detail.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { ReportComponent } from './main/report/report.component';
+import { HomeComponent } from './home/home.component';
+import { SearchTicketComponent } from './home/search-ticket/search-ticket.component';
+import { PassengerDetailComponent } from './home/passenger-detail/passenger-detail.component';
+import { MyTripsComponent } from './home/my-trips/my-trips.component';
+import { PaymentComponent } from './home/payment/payment.component';
 
 registerLocaleData(en);
 
@@ -59,6 +65,12 @@ registerLocaleData(en);
     TripDetailComponent,
     ResetPasswordComponent,
     ReportComponent,
+    HomeComponent,
+    SearchTicketComponent,
+    PassengerDetailComponent,
+    MyTripsComponent,
+    FilteredTripListComponent,
+    PaymentComponent,
   ],
   imports: [
     BrowserModule,
@@ -80,4 +92,4 @@ registerLocaleData(en);
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

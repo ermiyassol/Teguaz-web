@@ -22,6 +22,7 @@ import {
   templateUrl: './trip-detail.component.html',
   styleUrls: ['./trip-detail.component.css'],
 })
+
 export class TripDetailComponent implements OnInit {
   customStyle: {
     background: '#f7f7f7';

@@ -100,6 +100,18 @@ export class AdminAccountService {
       );
   }
 
+  fetchPrice(splace: String, dplace: string) {
+    const place = splace == 'addis ababa / አዲስ አበባ' ? dplace : splace;
+    let price = 0;
+    this.Admins[0].place.forEach((p) => {
+      if (p.destination == place) {
+        price = p.price;
+      }
+    });
+
+    return price;
+  }
+
   setAdmins() {
     const ref = this.db.database.ref('company');
     return ref.on('value', (snapshot) => {
@@ -115,6 +127,7 @@ export class AdminAccountService {
         }
       }
       this.adminList.next(this.Admins);
+      console.log('admins', this.Admins);
     });
     // this.childChanged();
     // this.childAdded();

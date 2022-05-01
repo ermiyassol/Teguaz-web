@@ -445,4 +445,53 @@ export class TripService {
         this.tripsList.next(this.Trips);
       });
   }
+
+  setAllTrips() {
+    // this.Trips = [];
+    const ref = this.db.database.ref('trip');
+    return ref.on('value', (snapshot) => {
+      this.Trips = [];
+      for (const key in snapshot.val()) {
+        if (snapshot.val().hasOwnProperty(key)) {
+          let temp: TripModel;
+          temp = snapshot.val()[key];
+          temp.key = key;
+          if (temp.passengers) {
+            const passengers: PassengerModel[] = [];
+            for (const key in temp.passengers) {
+              if (temp.passengers.hasOwnProperty(key)) {
+                let passTemp: PassengerModel;
+                passTemp = temp.passengers[key];
+                passTemp.key = key;
+                passTemp.bookingMethod = passTemp.bookingMethod
+                  ? passTemp.bookingMethod
+                  : 'App';
+                passTemp.startingPlace = passTemp.startingPlace
+                  .toString()
+                  .split(' / ');
+                passengers.push(passTemp);
+              }
+            }
+            temp.passengers = passengers;
+          } else {
+            temp.passengers = [];
+          }
+          // temp.passengers = temp.passengers ? temp.passengers : [];
+          this.Trips.push(temp);
+        }
+      }
+      this.Trips.sort((a, b) => {
+        const x = a.date.split(' / ')[1];
+        const y = b.date.split(' / ')[1];
+        if (x < y) {
+          return -1;
+        }
+        if (x > y) {
+          return 1;
+        }
+        return 0;
+      });
+      this.tripsList.next(this.Trips);
+    });
+  }
 }

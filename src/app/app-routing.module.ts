@@ -1,3 +1,8 @@
+import { PaymentComponent } from './home/payment/payment.component';
+import { MyTripsComponent } from './home/my-trips/my-trips.component';
+import { SearchTicketComponent } from './home/search-ticket/search-ticket.component';
+import { PassengerDetailComponent } from './home/passenger-detail/passenger-detail.component';
+import { HomeComponent } from './home/home.component';
 import { ReportComponent } from './main/report/report.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { TripDetailComponent } from './main/trip-detail/trip-detail.component';
@@ -17,7 +22,18 @@ import { MainComponent } from './main/main.component';
 import { PlaceCrudComponent } from './main/place-crud/place-crud.component';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'login' },
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  {
+    path: 'home',
+    component: HomeComponent,
+    children: [
+      { path: '', redirectTo: 'search_ticket', pathMatch: 'full' },
+      { path: 'search_ticket', component: SearchTicketComponent },
+      { path: 'my_trips', component: MyTripsComponent },
+      { path: 'passenger_detail', component: PassengerDetailComponent },
+      { path: 'payment_methods', component: PaymentComponent },
+    ],
+  },
   { path: 'login', component: LoginComponent },
   { path: 'reset_password', component: ResetPasswordComponent },
   {
